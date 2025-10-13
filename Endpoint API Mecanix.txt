@@ -1,0 +1,36 @@
+Endpoint API-Mecanix
+
+CLIENT
+	GET	http://127.0.0.1:8080/api/v1/client
+	GET	http://127.0.0.1:8080/api/v1/client/code
+	POST	http://127.0.0.1:8080/api/v1/client/create
+	PATCH	http://127.0.0.1:8080/api/v1/client/code/update
+	DELETE	http://127.0.0.1:8080/api/v1/client/code/delete
+
+VEHICLE
+	GET	http://127.0.0.1:8080/api/v1/vehicle
+	GET	http://127.0.0.1:8080/api/v1/vehicle/id
+	POST	http://127.0.0.1:8080/api/v1/vehicle/create
+	PATCH	http://127.0.0.1:8080/api/v1/vehicle/id/update
+	DELETE	http://127.0.0.1:8080/api/v1/vehicle/id/delete
+
+SERVICE
+	GET	http://127.0.0.1:8080/api/v1/service
+	GET	http://127.0.0.1:8080/api/v1/service/id
+	POST	http://127.0.0.1:8080/api/v1/service/create
+	PATCH	http://127.0.0.1:8080/api/v1/service/id/update
+	DELETE	http://127.0.0.1:8080/api/v1/service/id/delete
+
+USER
+	GET	http://127.0.0.1:8080/api/v1/user
+	GET	http://127.0.0.1:8080/api/v1/user/code
+	POST	http://127.0.0.1:8080/api/v1/user/create
+	PATCH	http://127.0.0.1:8080/api/v1/user/code/update
+	DELETE	http://127.0.0.1:8080/api/v1/user/code/delete
+
+RESERVATE
+	GET	http://127.0.0.1:8080/api/v1/reservate
+	GET	http://127.0.0.1:8080/api/v1/reservate/code
+	POST	http://127.0.0.1:8080/api/v1/reservate/create
+	PATCH	http://127.0.0.1:8080/api/v1/reservate/code/update
+	DELETE	http://127.0.0.1:8080/api/v1/reservate/code/delete
