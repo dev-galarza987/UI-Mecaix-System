@@ -43,7 +43,7 @@ export function DashboardPage() {
             </CardHeader>
             <CardContent className="flex-grow flex flex-col">
               <p className="text-muted-foreground mb-4 flex-grow">{module.description}</p>
-              <Button onClick={() => navigate(module.path)} disabled={module.path === "/services"}>
+              <Button onClick={() => navigate(module.path)}>
                 Ir a {module.title.split(' ')[0]}
               </Button>
             </CardContent>

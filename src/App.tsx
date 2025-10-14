@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { LoginForm } from "./components/Auth/Login";
-import { RegisterForm } from "./components/Auth/Register";
+import { RegisterForm } from "./components/Auth/Register"; /* No Cambias la importación de este componentes de auth */
 import { Layout } from "./components/layout/Layout";
 import { DashboardPage } from "./components/dashboard/DashboardPage";
 
@@ -15,6 +15,12 @@ import { VehiclePage } from "./components/vehicle/VehiclePage";
 import VehicleList from "./components/vehicle/ListAll";
 import VehicleRegisterForm from "./components/vehicle/RegisterForm";
 import VehicleUpdateForm from "./components/vehicle/UpdateForm";
+
+// Service Components
+import { ServicePage } from "./components/service/ServicePage";
+import ServiceList from "./components/service/ListAll";
+import ServiceRegisterForm from "./components/service/RegisterForm";
+import ServiceUpdateForm from "./components/service/UpdateForm";
 
 import "./App.css";
 
@@ -41,6 +47,12 @@ function App() {
         <Route path="/vehicles/list" element={<VehicleList />} />
         <Route path="/vehicles/new" element={<VehicleRegisterForm />} />
         <Route path="/vehicles/update/:id" element={<VehicleUpdateForm />} />
+
+        {/* Service Routes */}
+        <Route path="/services" element={<ServicePage />} />
+        <Route path="/services/list" element={<ServiceList />} />
+        <Route path="/services/new" element={<ServiceRegisterForm />} />
+        <Route path="/services/update/:code" element={<ServiceUpdateForm />} />
       </Route>
 
       <Route path="*" element={<h1>404 - Not Found</h1>} />
