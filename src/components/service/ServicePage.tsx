@@ -7,24 +7,24 @@ export function ServicePage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-primary">Service Management</h1>
+      <h1 className="text-3xl font-bold mb-6 text-primary">Gestión de servicios</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="hover:shadow-lg transition-shadow duration-300">
           <CardHeader>
-            <CardTitle>List Services</CardTitle>
+            <CardTitle>Lista de servicios</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground mb-4">View, edit, and delete existing services.</p>
-            <Button onClick={() => navigate('/services/list')}>Go to List</Button>
+            <p className="text-muted-foreground mb-4">Ver, editar y eliminar servicios existentes.</p>
+            <Button onClick={() => navigate('/services/list')}>Ir a la lista</Button>
           </CardContent>
         </Card>
         <Card className="hover:shadow-lg transition-shadow duration-300">
           <CardHeader>
-            <CardTitle>Create New Service</CardTitle>
+            <CardTitle>Crear nuevo servicio</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground mb-4">Add a new service to the system.</p>
-            <Button onClick={() => navigate('/services/new')}>Create Service</Button>
+            <p className="text-muted-foreground mb-4">Añadir un nuevo servicio al sistema.</p>
+            <Button onClick={() => navigate('/services/new')}>Crear Servicio</Button>
           </CardContent>
         </Card>
       </div>

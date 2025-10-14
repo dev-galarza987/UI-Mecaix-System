@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { Navbar } from "./Navbar";
 
 export function Layout() {
   return (
@@ -15,7 +16,10 @@ export function Layout() {
               <span className="hidden font-bold sm:inline-block">Mecanix UI</span>
             </a>
           </div>
-          <div className="flex flex-1 items-center justify-end space-x-2">
+          <div className="flex-1">
+            <Navbar />
+          </div>
+          <div className="flex items-center justify-end space-x-2">
             <ModeToggle />
           </div>
         </div>

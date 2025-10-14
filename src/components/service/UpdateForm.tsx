@@ -59,9 +59,9 @@ export default function ServiceUpdateForm() {
   return (
     <div className="container mx-auto p-4">
       <Button variant="outline" onClick={() => navigate('/services/list')} className="mb-4">
-        Back to List
+        Regresar a la lista de servicios
       </Button>
-      <h1 className="text-3xl font-bold mb-6 text-primary">Edit Service</h1>
+      <h1 className="text-3xl font-bold mb-6 text-primary">Editar Servicio</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -69,7 +69,7 @@ export default function ServiceUpdateForm() {
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Code</FormLabel>
+                <FormLabel>Código</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="101" {...field} disabled />
                 </FormControl>
@@ -82,9 +82,9 @@ export default function ServiceUpdateForm() {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>Título</FormLabel>
                 <FormControl>
-                  <Input placeholder="Oil Change" {...field} />
+                  <Input placeholder="Cambio de Aceite" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,9 +95,9 @@ export default function ServiceUpdateForm() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>Descripción</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Detailed description of the service..." {...field} />
+                  <Textarea placeholder="Descripción detallada del servicio..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -108,7 +108,7 @@ export default function ServiceUpdateForm() {
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price</FormLabel>
+                <FormLabel>Precio</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="50.00" {...field} />
                 </FormControl>
@@ -116,7 +116,7 @@ export default function ServiceUpdateForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Update Service</Button>
+          <Button type="submit">Actualizar Servicio</Button>
         </form>
       </Form>
     </div>

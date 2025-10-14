@@ -74,18 +74,18 @@ export default function ServiceList() {
     <TooltipProvider>
       <div className="container mx-auto p-4">
         <Button variant="outline" onClick={() => navigate('/services')} className="mb-4">
-          Back to Service Menu
+          Regresar al menu de servicios
         </Button>
-        <h1 className="text-3xl font-bold mb-6 text-primary">Service List</h1>
+        <h1 className="text-3xl font-bold mb-6 text-primary">Lista de Servicios</h1>
         <div className="border rounded-lg">
           <Table>
             <TableHeader>
               <TableRow className="border-b-0">
-                <TableHead>Code</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Código</TableHead>
+                <TableHead>Título</TableHead>
+                <TableHead>Descripción</TableHead>
+                <TableHead>Precio</TableHead>
+                <TableHead className="text-right">Actiones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -106,7 +106,7 @@ export default function ServiceList() {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Edit Service</p>
+                        <p>Editar Servicio</p>
                       </TooltipContent>
                     </Tooltip>
                     <Tooltip>
@@ -118,7 +118,7 @@ export default function ServiceList() {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Delete Service</p>
+                        <p>Eliminar Servicio</p>
                       </TooltipContent>
                     </Tooltip>
                   </TableCell>
@@ -131,14 +131,14 @@ export default function ServiceList() {
         <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>¿Estás seguro de eliminar este servicio?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the service.
+                Esta acción no se puede deshacer. Esto eliminará permanentemente el servicio.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDelete}>Eliminar</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

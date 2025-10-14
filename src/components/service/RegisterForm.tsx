@@ -47,9 +47,9 @@ export default function ServiceRegisterForm() {
   return (
     <div className="container mx-auto p-4">
       <Button variant="outline" onClick={() => navigate('/services')} className="mb-4">
-        Back to Service Menu
+        Regresar al menu de servicios
       </Button>
-      <h1 className="text-3xl font-bold mb-6 text-primary">Create New Service</h1>
+      <h1 className="text-3xl font-bold mb-6 text-primary">Crear Nuevo Servicio</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -57,7 +57,7 @@ export default function ServiceRegisterForm() {
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Code</FormLabel>
+                <FormLabel>Código</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="101" {...field} />
                 </FormControl>
@@ -70,9 +70,9 @@ export default function ServiceRegisterForm() {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>Título</FormLabel>
                 <FormControl>
-                  <Input placeholder="Oil Change" {...field} />
+                  <Input placeholder="Cambio de Aceite" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,9 +83,9 @@ export default function ServiceRegisterForm() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>Descripción</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Detailed description of the service..." {...field} />
+                  <Textarea placeholder="Descripción detallada del servicio..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -96,7 +96,7 @@ export default function ServiceRegisterForm() {
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price</FormLabel>
+                <FormLabel>Precio</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="50.00" {...field} />
                 </FormControl>
@@ -104,7 +104,7 @@ export default function ServiceRegisterForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Create Service</Button>
+          <Button type="submit">Crear Servicio</Button>
         </form>
       </Form>
     </div>
