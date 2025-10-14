@@ -1,8 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import { LoginForm } from "./components/Auth/Login";
-import { RegisterForm } from "./components/Auth/Register"; /* No Cambias la importación de este componentes de auth */
-import { Layout } from "./components/layout/Layout";
 import { DashboardPage } from "./components/dashboard/DashboardPage";
+import { Layout } from "./components/layout/Layout";
+
+// Auth Components
+import { LoginForm } from "./components/Auth/Login";
+import { RegisterForm } from "./components/Auth/Register"; /* No Cambies la importación de este componentes de auth */
 
 // Client Components
 import { ClientPage } from "./components/client/ClientPage";
