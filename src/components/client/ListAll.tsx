@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { clientService, type Client } from '../service/clientService';
+import { clientService, type Client } from '../../services/clientService';
 import { Button } from '@/components/ui/button';
 import { 
   Table, 

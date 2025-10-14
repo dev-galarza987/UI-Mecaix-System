@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { vehicleService, type Vehicle } from '../service/vehicleService';
+import { vehicleService, type Vehicle } from '../../services/vehicleService';
 import { Button } from '@/components/ui/button';
 import {
   Table,

@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { vehicleService, type VehicleData } from '../service/vehicleService';
+import { vehicleService, type VehicleData } from '../../services/vehicleService';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const formSchema = z.object({
