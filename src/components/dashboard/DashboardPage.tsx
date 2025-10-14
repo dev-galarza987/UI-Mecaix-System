@@ -1,26 +1,32 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Car, Wrench } from 'lucide-react';
+import { Users, Car, Wrench, CalendarCheck } from 'lucide-react';
 
 const modules = [
   {
-    title: "Gestión de clientes",
-    description: "Gestiona todas las operaciones relacionadas con los clientes.",
+    title: "Client Management",
+    description: "Manage all client-related operations.",
     path: "/clients",
     icon: <Users className="w-8 h-8 text-primary" />
   },
   {
-    title: "Gestión de vehículos",
-    description: "Gestiona todas las operaciones relacionadas con los vehículos.",
+    title: "Vehicle Management",
+    description: "Manage all vehicle-related operations.",
     path: "/vehicles",
     icon: <Car className="w-8 h-8 text-primary" />
   },
   {
-    title: "Gestión de servicios",
-    description: "Gestiona todas las operaciones relacionadas con los servicios.",
+    title: "Service Management",
+    description: "Manage all service-related operations.",
     path: "/services",
     icon: <Wrench className="w-8 h-8 text-primary" />
+  },
+  {
+    title: "Reservation Management",
+    description: "Manage all reservation-related operations.",
+    path: "/reservates",
+    icon: <CalendarCheck className="w-8 h-8 text-primary" />
   },
 ];
 
@@ -30,8 +36,8 @@ export function DashboardPage() {
   return (
     <div className="container mx-auto p-4">
       <div className='text-center mb-10'>
-        <h1 className='text-4xl font-bold text-primary'>Dashboard principal</h1>
-        <p className='text-muted-foreground'>Selecciona un módulo para comenzar</p>
+        <h1 className='text-4xl font-bold text-primary'>Main Dashboard</h1>
+        <p className='text-muted-foreground'>Select a module to get started</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -44,7 +50,7 @@ export function DashboardPage() {
             <CardContent className="flex-grow flex flex-col">
               <p className="text-muted-foreground mb-4 flex-grow">{module.description}</p>
               <Button onClick={() => navigate(module.path)}>
-                Ir a {module.title.split(' ')[0]}
+                Go to {module.title.split(' ')[0]}
               </Button>
             </CardContent>
           </Card>
