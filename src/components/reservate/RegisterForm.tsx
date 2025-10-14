@@ -11,7 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+// import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -85,31 +85,32 @@ export default function ReservateRegisterForm() {
   return (
     <div className="container mx-auto p-4">
       <Button variant="outline" onClick={() => navigate('/reservates')} className="mb-4">
-        Back to Reservation Menu
+        Regresar al menú de reservaciones
       </Button>
-      <h1 className="text-3xl font-bold mb-6 text-primary">Create New Reservation</h1>
+      <h1 className="text-3xl font-bold mb-6 text-primary">Crear nueva reservación</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
+          {/* El back-end (api genera el código) */}
+          {/* <FormField
             control={form.control}
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Code</FormLabel>
+                <FormLabel>Código</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="1001" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
           <FormField
             control={form.control}
             name="reservationDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Reservation Date</FormLabel>
+                <FormLabel>Fecha de reservación</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -123,7 +124,7 @@ export default function ReservateRegisterForm() {
                         {field.value ? (
                           format(field.value, "PPP")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>Seleccionar una fecha</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -151,17 +152,17 @@ export default function ReservateRegisterForm() {
             name="state"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>State</FormLabel>
+                <FormLabel>Estado</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a state" />
+                      <SelectValue placeholder="Seleccionar un estado" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Pending">Pendiente</SelectItem>
+                    <SelectItem value="In Progress">En Progreso</SelectItem>
+                    <SelectItem value="Completed">Completada</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -178,7 +179,7 @@ export default function ReservateRegisterForm() {
                 <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a client" />
+                      <SelectValue placeholder="Seleccionar un cliente" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -199,7 +200,7 @@ export default function ReservateRegisterForm() {
             name="serviceIds"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Services</FormLabel>
+                <FormLabel>Servicios</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -213,15 +214,15 @@ export default function ReservateRegisterForm() {
                       >
                         {selectedServices.length
                           ? selectedServices.map(s => s.title).join(', ')
-                          : "Select services"}
+                          : "Seleccionar servicios"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0">
                     <Command>
-                      <CommandInput placeholder="Search services..." />
-                      <CommandEmpty>No services found.</CommandEmpty>
+                      <CommandInput placeholder="Buscar servicios..." />
+                      <CommandEmpty>No se encontraron servicios.</CommandEmpty>
                       <CommandGroup>
                         {services.map((service) => (
                           <CommandItem
@@ -253,7 +254,7 @@ export default function ReservateRegisterForm() {
             )}
           />
 
-          <Button type="submit">Create Reservation</Button>
+          <Button type="submit">Crear reservación</Button>
         </form>
       </Form>
     </div>

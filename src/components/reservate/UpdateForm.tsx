@@ -98,9 +98,9 @@ export default function ReservateUpdateForm() {
   return (
     <div className="container mx-auto p-4">
       <Button variant="outline" onClick={() => navigate('/reservates/list')} className="mb-4">
-        Back to List
+        Regresar a la lista
       </Button>
-      <h1 className="text-3xl font-bold mb-6 text-primary">Edit Reservation</h1>
+      <h1 className="text-3xl font-bold mb-6 text-primary">Editar Reservación</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -108,7 +108,7 @@ export default function ReservateUpdateForm() {
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Code</FormLabel>
+                <FormLabel>Código</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="1001" {...field} disabled />
                 </FormControl>
@@ -122,7 +122,7 @@ export default function ReservateUpdateForm() {
             name="reservationDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Reservation Date</FormLabel>
+                <FormLabel>Fecha de Reservación</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -136,7 +136,7 @@ export default function ReservateUpdateForm() {
                         {field.value ? (
                           format(field.value, "PPP")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>Seleccionar una fecha</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
@@ -168,13 +168,13 @@ export default function ReservateUpdateForm() {
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a state" />
+                      <SelectValue placeholder="Seleccionar un estado" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Pending">Pendiente</SelectItem>
+                    <SelectItem value="In Progress">En Progreso</SelectItem>
+                    <SelectItem value="Completed">Completada</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -187,11 +187,11 @@ export default function ReservateUpdateForm() {
             name="clientId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Client</FormLabel>
+                <FormLabel>Cliente</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a client" />
+                      <SelectValue placeholder="Seleccionar un cliente" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -212,7 +212,7 @@ export default function ReservateUpdateForm() {
             name="serviceIds"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Services</FormLabel>
+                <FormLabel>Servicios</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -226,15 +226,15 @@ export default function ReservateUpdateForm() {
                       >
                         {selectedServices.length
                           ? selectedServices.map(s => s.title).join(', ')
-                          : "Select services"}
+                          : "Seleccionar servicios"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent className="w-full p-0">
                     <Command>
-                      <CommandInput placeholder="Search services..." />
-                      <CommandEmpty>No services found.</CommandEmpty>
+                      <CommandInput placeholder="Buscar servicios..." />
+                      <CommandEmpty>No se encontraron servicios.</CommandEmpty>
                       <CommandGroup>
                         {services.map((service) => (
                           <CommandItem
@@ -266,7 +266,7 @@ export default function ReservateUpdateForm() {
             )}
           />
 
-          <Button type="submit">Update Reservation</Button>
+          <Button type="submit">Actualizar Reservación</Button>
         </form>
       </Form>
     </div>

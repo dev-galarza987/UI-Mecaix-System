@@ -30,6 +30,9 @@ import ReservateList from './components/reservate/ListAll';
 import ReservateRegisterForm from './components/reservate/RegisterForm';
 import ReservateUpdateForm from './components/reservate/UpdateForm';
 
+// Error Components
+import { NotFoundPage } from './components/error/Not-Found-404';
+
 import './App.css';
 
 function App() {
@@ -69,7 +72,7 @@ function App() {
         <Route path="/reservates/update/:code" element={<ReservateUpdateForm />} />
       </Route>
 
-      <Route path="*" element={<h1>404 - Not Found</h1>} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

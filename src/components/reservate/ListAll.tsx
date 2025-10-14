@@ -76,20 +76,20 @@ export default function ReservateList() {
     <TooltipProvider>
       <div className="container mx-auto p-4">
         <Button variant="outline" onClick={() => navigate('/reservates')} className="mb-4">
-          Back to Reservation Menu
+          Regresar al menu de Reservaciones
         </Button>
-        <h1 className="text-3xl font-bold mb-6 text-primary">Reservation List</h1>
+        <h1 className="text-3xl font-bold mb-6 text-primary">Lista de Reservaciones</h1>
         <div className="border rounded-lg">
           <Table>
             <TableHeader>
               <TableRow className="border-b-0">
-                <TableHead>Code</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Total Price</TableHead>
-                <TableHead>State</TableHead>
-                <TableHead>Services</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Código</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Precio Total</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Servicios</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -106,7 +106,7 @@ export default function ReservateList() {
                         <CollapsibleTrigger asChild>
                           <Button variant="ghost" size="sm">
                             <ChevronDown className="h-4 w-4" />
-                            <span className="sr-only">Toggle services</span>
+                            <span className="sr-only">Palanca de servicios</span>
                           </Button>
                         </CollapsibleTrigger>
                       </TableCell>
@@ -121,7 +121,7 @@ export default function ReservateList() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Edit Reservation</p>
+                            <p>Editar reservación</p>
                           </TooltipContent>
                         </Tooltip>
                         <Tooltip>
@@ -133,7 +133,7 @@ export default function ReservateList() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Delete Reservation</p>
+                            <p>Eliminar reservación</p>
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>
@@ -142,7 +142,7 @@ export default function ReservateList() {
                       <TableRow>
                         <TableCell colSpan={7}>
                           <div className="p-4 bg-muted/50 rounded-md">
-                            <h4 className="font-semibold mb-2">Services for reservation {reservate.code}</h4>
+                            <h4 className="font-semibold mb-2">Servicios para la reservación {reservate.code}</h4>
                             <ul>
                               {reservate.services.map(service => (
                                 <li key={service.id} className="flex justify-between">
@@ -165,14 +165,14 @@ export default function ReservateList() {
         <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>¿Estás seguro de eliminar esta reservación?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the reservation.
+                Esta acción no se puede deshacer. Esto eliminará permanentemente la reservación.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDelete}>Eliminar</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
