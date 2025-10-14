@@ -70,7 +70,7 @@ export function LoginForm() {
           </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block">
+      {/* <div className="hidden bg-muted lg:block">
         <img
           src="/placeholder.svg"
           alt="Image"
@@ -78,7 +78,7 @@ export function LoginForm() {
           height="1080"
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
-      </div>
+      </div> */}
     </div>
   );
 }

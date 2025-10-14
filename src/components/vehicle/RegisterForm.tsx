@@ -11,55 +11,54 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { clientService, type ClientData } from '../service/clientService';
+import { vehicleService, type VehicleData } from '../service/vehicleService';
 import { useNavigate } from 'react-router-dom';
 
 const formSchema = z.object({
-  code: z.coerce.number().int().positive(),
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  lastname: z.string().min(2, { message: 'Lastname must be at least 2 characters.' }),
-  phone: z.coerce.number().int().positive(),
+  board: z.string().min(2, { message: 'Board must be at least 2 characters.' }),
+  brand: z.string().min(2, { message: 'Brand must be at least 2 characters.' }),
+  model: z.string().min(2, { message: 'Model must be at least 2 characters.' }),
+  year: z.coerce.number().int().positive(),
 });
 
-export default function RegisterForm() {
+export default function VehicleRegisterForm() {
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      code: undefined,
-      name: '',
-      lastname: '',
-      phone: undefined,
+      board: '',
+      brand: '',
+      model: '',
+      year: undefined,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const clientData: ClientData = values;
-      await clientService.createClient(clientData);
-      navigate('/clients/list');
+      const vehicleData: VehicleData = values;
+      await vehicleService.createVehicle(vehicleData);
+      navigate('/vehicles/list');
     } catch (error) {
-      console.error('Failed to create client', error);
-      // Here you could show an error message to the user
+      console.error('Failed to create vehicle', error);
     }
   }
 
   return (
     <div className="container mx-auto p-4">
-      <Button variant="outline" onClick={() => navigate('/clients')} className="mb-4">
-        Back to Client Menu
+      <Button variant="outline" onClick={() => navigate('/vehicles')} className="mb-4">
+        Back to Vehicle Menu
       </Button>
-      <h1 className="text-3xl font-bold mb-6 text-primary">Create New Client</h1>
+      <h1 className="text-3xl font-bold mb-6 text-primary">Create New Vehicle</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="code"
+            name="board"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Code</FormLabel>
+                <FormLabel>Board</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} />
+                  <Input placeholder="ABC-123" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -67,12 +66,12 @@ export default function RegisterForm() {
           />
           <FormField
             control={form.control}
-            name="name"
+            name="brand"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Brand</FormLabel>
                 <FormControl>
-                  <Input placeholder="John" {...field} />
+                  <Input placeholder="Toyota" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -80,12 +79,12 @@ export default function RegisterForm() {
           />
           <FormField
             control={form.control}
-            name="lastname"
+            name="model"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Lastname</FormLabel>
+                <FormLabel>Model</FormLabel>
                 <FormControl>
-                  <Input placeholder="Doe" {...field} />
+                  <Input placeholder="Corolla" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -93,18 +92,18 @@ export default function RegisterForm() {
           />
           <FormField
             control={form.control}
-            name="phone"
+            name="year"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel>Year</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} />
+                  <Input type="number" placeholder="2023" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Create Client</Button>
+          <Button type="submit">Create Vehicle</Button>
         </form>
       </Form>
     </div>
