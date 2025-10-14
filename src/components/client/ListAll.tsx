@@ -138,16 +138,30 @@ export default function ListAll() {
         </div>
 
         <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the client.
+          <AlertDialogContent className="max-w-md mx-auto bg-card border-2 border-destructive/20 shadow-xl">
+            <AlertDialogHeader className="space-y-4 text-center">
+              <div className="mx-auto w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-destructive" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <AlertDialogTitle className="text-xl font-bold text-destructive">
+                ¿Estás seguro de eliminar este cliente?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-muted-foreground leading-relaxed">
+                Esta acción no se puede deshacer. Esto eliminará permanentemente el cliente y todos sus datos asociados.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+            <AlertDialogFooter className="flex gap-2 pt-4">
+              <AlertDialogCancel className="flex-1 hover:bg-muted transition-colors">
+                Cancelar
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleConfirmDelete}
+                className="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold transition-colors"
+              >
+                Eliminar Cliente
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
