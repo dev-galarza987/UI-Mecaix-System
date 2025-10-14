@@ -130,7 +130,7 @@ export default function VehicleList() {
         </div>
 
         <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-          <AlertDialogContent className="max-w-md mx-auto bg-card border-2 border-destructive/20 shadow-xl">
+          <AlertDialogContent className="max-w-md mx-auto bg-card/95 backdrop-blur-md border-2 border-destructive/20 shadow-xl">
             <AlertDialogHeader className="space-y-4 text-center">
               <div className="mx-auto w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-destructive" viewBox="0 0 20 20" fill="currentColor">
