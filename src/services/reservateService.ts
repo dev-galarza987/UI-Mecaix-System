@@ -4,10 +4,11 @@ const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/reservate`;
 
 export interface Client {
   id: number;
-  code: number;
+  clientCode: number;
   name: string;
-  lastname: string;
-  phone: number;
+  lastName: string;
+  phone: string;
+  email: string;
 }
 
 export interface Service {
@@ -18,17 +19,39 @@ export interface Service {
   price: number;
 }
 
-export interface Reservate {
+export interface Mechanic {
   id: number;
-  code: number;
-  reservationDate: string;
-  totalPrice: number;
-  state: string;
-  client: Client;
-  services: Service[];
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  experienceLevel: string;
 }
 
-export type ReservateData = Omit<Reservate, 'id'>;
+export interface Reservate {
+  id: number;
+  codeReservate: number;
+  reservationDate: string;
+  totalPrice: number;
+  state: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+  clientId: number;
+  mechanicId: number;
+  createdAt?: string;
+  updatedAt?: string;
+  client?: Client;
+  mechanic?: Mechanic;
+  services?: Service[];
+}
+
+// Type for creation
+export interface ReservateData {
+  codeReservate: number;
+  reservationDate: string;
+  totalPrice: number;
+  state: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+  clientId: number;
+  mechanicId: number;
+  serviceIds: number[];
+}
 
 export const reservateService = {
   getAllReservates: async (): Promise<Reservate[]> => {
