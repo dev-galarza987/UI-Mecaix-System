@@ -11,6 +11,7 @@ import { ClientPage } from './components/client/ClientPage';
 import ClientList from './components/client/ListAll';
 import ClientRegisterForm from './components/client/RegisterForm';
 import ClientUpdateForm from './components/client/UpdateForm';
+// import { ClientsManager } from './components/clients'; // Temporalmente comentado para evitar conflictos
 
 // Vehicle Components
 import { VehiclePage } from './components/vehicle/VehiclePage';
@@ -52,6 +53,7 @@ function App() {
         <Route path="/clients/list" element={<ClientList />} />
         <Route path="/clients/new" element={<ClientRegisterForm />} />
         <Route path="/clients/update/:code" element={<ClientUpdateForm />} />
+        {/* <Route path="/clients/manager" element={<ClientsManager />} /> */}
 
         {/* Vehicle Routes */}
         <Route path="/vehicles" element={<VehiclePage />} />

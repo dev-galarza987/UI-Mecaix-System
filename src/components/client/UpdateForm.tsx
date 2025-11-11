@@ -1,57 +1,69 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+﻿import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { clientService, type ClientData } from '../../services/clientService';
+import { Label } from '@/components/ui/label';
+import { getClientById, updateClient, type Client } from '../../services/clientService';
 import { useNavigate, useParams } from 'react-router-dom';
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  lastname: z.string().min(2, { message: 'Lastname must be at least 2 characters.' }),
-  phone: z.coerce.number().int().positive(),
-});
 
 export default function UpdateForm() {
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
   const clientCode = Number(code);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    lastname: '',
+    phone: ''
   });
+  
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchClient = async () => {
       try {
-        const client = await clientService.getClientByCode(clientCode);
-        form.reset(client);
+        const client = await getClientById(clientCode);
+        setFormData({
+          name: client.nombre || '',
+          lastname: client.apellido || '',
+          phone: client.telefono || ''
+        });
       } catch (error) {
         console.error('Failed to fetch client', error);
+      } finally {
+        setLoading(false);
       }
     };
+    
     if (clientCode) {
       fetchClient();
     }
-  }, [clientCode, form]);
+  }, [clientCode]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const clientData: Partial<ClientData> = values;
-      await clientService.updateClient(clientCode, clientData);
+      const clientData: Partial<Client> = {
+        nombre: formData.name,
+        apellido: formData.lastname,
+        telefono: formData.phone
+      };
+      await updateClient(clientCode, clientData);
       navigate('/clients/list');
     } catch (error) {
       console.error('Failed to update client', error);
     }
+  };
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
   }
 
   return (
@@ -59,51 +71,48 @@ export default function UpdateForm() {
       <Button variant="outline" onClick={() => navigate('/clients/list')} className="mb-4">
         Back to List
       </Button>
-      <h1 className="text-3xl font-bold mb-6 text-primary">Edit Client</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="John" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="lastname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Lastname</FormLabel>
-                <FormControl>
-                  <Input placeholder="Doe" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Update Client</Button>
+      <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Update Client</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="John"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="lastname">Lastname</Label>
+            <Input
+              id="lastname"
+              name="lastname"
+              type="text"
+              value={formData.lastname}
+              onChange={handleChange}
+              placeholder="Doe"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="phone">Phone</Label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="123456789"
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full">Update Client</Button>
         </form>
-      </Form>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { clientService, type Client } from '../../services/clientService';
+import { getAllClients, deleteClient, type Client } from '../../services/clientService';
 import { Button } from '@/components/ui/button';
 import { 
   Table, 
@@ -36,7 +36,7 @@ export default function ListAll() {
     const fetchClients = async () => {
       try {
         setLoading(true);
-        const data = await clientService.getAllClients();
+        const data = await getAllClients();
         setClients(data);
         setError(null);
       } catch (err) {
@@ -49,16 +49,16 @@ export default function ListAll() {
     fetchClients();
   }, []);
 
-  const handleDeleteClick = (code: number) => {
-    setClientToDelete(code);
+  const handleDeleteClick = (id: number) => {
+    setClientToDelete(id);
     setShowDeleteAlert(true);
   };
 
   const handleConfirmDelete = async () => {
     if (clientToDelete !== null) {
       try {
-        await clientService.deleteClient(clientToDelete);
-        setClients(clients.filter((c) => c.code !== clientToDelete));
+        await deleteClient(clientToDelete);
+        setClients(clients.filter((c) => c.id !== clientToDelete));
       } catch (err) {
         setError('Failed to delete client.');
         console.error(err);
@@ -82,7 +82,7 @@ export default function ListAll() {
           <Table>
             <TableHeader>
               <TableRow className="border-b-0">
-                <TableHead className="w-[100px]">Code</TableHead>
+                <TableHead className="w-[100px]">ID</TableHead>
                 <TableHead>Client</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -91,23 +91,23 @@ export default function ListAll() {
             <TableBody>
               {clients.map((client) => (
                 <TableRow key={client.id} className="hover:bg-muted/50">
-                  <TableCell className="font-mono text-muted-foreground">{client.code}</TableCell>
+                  <TableCell className="font-mono text-muted-foreground">{client.id}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage src={`https://avatar.vercel.sh/${client.name}.png`} alt={client.name} />
-                        <AvatarFallback>{client.name.charAt(0)}{client.lastname.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={`https://avatar.vercel.sh/${client.nombre}.png`} alt={client.nombre} />
+                        <AvatarFallback>{client.nombre.charAt(0)}{client.apellido.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">{client.name} {client.lastname}</p>
+                        <p className="font-medium">{client.nombre} {client.apellido}</p>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{client.phone}</TableCell>
+                  <TableCell>{client.telefono}</TableCell>
                   <TableCell className="text-right">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="outline" size="icon" onClick={() => navigate(`/clients/update/${client.code}`)}>
+                        <Button variant="outline" size="icon" onClick={() => navigate(`/clients/update/${client.id}`)}>
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
                             <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" />
@@ -120,7 +120,7 @@ export default function ListAll() {
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="destructive" size="icon" className="ml-2" onClick={() => handleDeleteClick(client.code)}>
+                        <Button variant="destructive" size="icon" className="ml-2" onClick={() => handleDeleteClick(client.id!)}>
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
                           </svg>

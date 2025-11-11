@@ -1,112 +1,108 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+﻿import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { clientService, type ClientData } from '../../services/clientService';
+import { Label } from '@/components/ui/label';
+import { createClient, type Client } from '../../services/clientService';
 import { useNavigate } from 'react-router-dom';
-
-const formSchema = z.object({
-  code: z.coerce.number().int().positive(),
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  lastname: z.string().min(2, { message: 'Lastname must be at least 2 characters.' }),
-  phone: z.coerce.number().int().positive(),
-});
 
 export default function RegisterForm() {
   const navigate = useNavigate();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      code: undefined,
-      name: '',
-      lastname: '',
-      phone: undefined,
-    },
+  const [formData, setFormData] = useState({
+    code: '',
+    name: '',
+    lastname: '',
+    phone: ''
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const clientData: ClientData = values;
-      await clientService.createClient(clientData);
+      const clientData: Client = {
+        nombre: formData.name,
+        apellido: formData.lastname,
+        telefono: formData.phone,
+        email: '',
+        genero: 'otro',
+        fechaNacimiento: '',
+        tipoDocumento: '',
+        numeroDocumento: formData.code,
+        direccion: '',
+        ciudad: '',
+        codigoPostal: '',
+        profesion: '',
+        estado: 'activo',
+        metodoPrefContacto: 'telefono',
+        frecuenciaContacto: 'media'
+      };
+      await createClient(clientData);
       navigate('/clients/list');
     } catch (error) {
       console.error('Failed to create client', error);
-      // Here you could show an error message to the user
     }
-  }
+  };
 
   return (
-    <div className="container mx-auto p-4">
-      <Button variant="outline" onClick={() => navigate('/clients')} className="mb-4">
-        Back to Client Menu
-      </Button>
-      <h1 className="text-3xl font-bold mb-6 text-primary">Create New Client</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
+    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center">Register New Client</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="code">Code</Label>
+          <Input
+            id="code"
             name="code"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Code</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            type="number"
+            value={formData.code}
+            onChange={handleChange}
+            placeholder="123"
+            required
           />
-          <FormField
-            control={form.control}
+        </div>
+        <div>
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
             name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="John" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            type="text"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="John"
+            required
           />
-          <FormField
-            control={form.control}
+        </div>
+        <div>
+          <Label htmlFor="lastname">Lastname</Label>
+          <Input
+            id="lastname"
             name="lastname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Lastname</FormLabel>
-                <FormControl>
-                  <Input placeholder="Doe" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            type="text"
+            value={formData.lastname}
+            onChange={handleChange}
+            placeholder="Doe"
+            required
           />
-          <FormField
-            control={form.control}
+        </div>
+        <div>
+          <Label htmlFor="phone">Phone</Label>
+          <Input
+            id="phone"
             name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            type="tel"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="123456789"
+            required
           />
-          <Button type="submit">Create Client</Button>
-        </form>
-      </Form>
+        </div>
+        <Button type="submit" className="w-full">Create Client</Button>
+      </form>
     </div>
   );
 }

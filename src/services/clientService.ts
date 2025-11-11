@@ -1,150 +1,264 @@
-import { apiClient } from './apiConfig';
+import { apiClient } from "./apiConfig";
+import { mockClients } from "./mockData";
 
-const API_BASE_URL = `/client`;
+const API_BASE_URL = "/client";
+
+// Variable para controlar si usar mock data
+const USE_MOCK_DATA = true; // Cambiar a false cuando el backend esté funcionando
 
 export interface Client {
-  id: number;
-  clientCode: number;
-  name: string;
-  lastName: string;
-  phone: string;
-  ci: number;
-  type: 'client';
-  gender: 'male' | 'female';
+  id?: number;
+  nombre: string;
+  apellido: string;
+  telefono: string;
   email: string;
-  emailVerified?: boolean;
-  phoneVerified?: boolean;
-  lastLogin?: string;
-  address: string;
-  preferredContactMethod: 'phone' | 'email' | 'whatsapp';
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  genero: 'masculino' | 'femenino' | 'otro';
+  fechaNacimiento: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  direccion: string;
+  ciudad: string;
+  codigoPostal: string;
+  profesion: string;
+  estado: 'activo' | 'inactivo';
+  fechaRegistro?: string;
+  ultimaActualizacion?: string;
+  notas?: string;
+  metodoPrefContacto: 'telefono' | 'email' | 'ambos';
+  frecuenciaContacto: 'alta' | 'media' | 'baja';
 }
 
-// Tipo para la creación, ya que el ID es generado por el backend
-export type ClientData = Omit<Client, 'id' | 'emailVerified' | 'phoneVerified' | 'lastLogin' | 'isActive' | 'createdAt' | 'updatedAt'> & {
-  password: string; // Requerido para creación
+export interface ClientFilters {
+  estado?: 'activo' | 'inactivo';
+  genero?: 'masculino' | 'femenino' | 'otro';
+  ciudad?: string;
+  profesion?: string;
+  metodoPrefContacto?: 'telefono' | 'email' | 'ambos';
+  frecuenciaContacto?: 'alta' | 'media' | 'baja';
+  fechaRegistroDesde?: string;
+  fechaRegistroHasta?: string;
+  edadMinima?: number;
+  edadMaxima?: number;
+}
+
+export interface ClientStats {
+  total: number;
+  activos: number;
+  inactivos: number;
+  porGenero: {
+    masculino: number;
+    femenino: number;
+    otro: number;
+  };
+  porMetodoContacto: {
+    telefono: number;
+    email: number;
+    ambos: number;
+  };
+  porFrecuenciaContacto: {
+    alta: number;
+    media: number;
+    baja: number;
+  };
+  ciudadesMasComunes: Array<{ ciudad: string; count: number }>;
+  edadPromedio: number;
+  clientesRecientes: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+// CRUD básico
+export const getAllClients = async (): Promise<Client[]> => {
+  if (USE_MOCK_DATA) {
+    // Simular una petición asíncrona
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return mockClients;
+  }
+  
+  const response = await apiClient.get(API_BASE_URL);
+  return response.data;
 };
 
-export interface ClientStatistics {
-  totalClients: number;
-  activeClients: number;
-  inactiveClients: number;
-  totalSpent: number;
-  averageSpent: number;
-}
+export const getClientById = async (id: number): Promise<Client> => {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const client = mockClients.find(c => c.id === id);
+    if (!client) {
+      throw new Error('Cliente no encontrado');
+    }
+    return client;
+  }
+  
+  const response = await apiClient.get(`${API_BASE_URL}/${id}`);
+  return response.data;
+};
 
-export interface TopClient {
-  clientCode: number;
-  name: string;
-  lastName: string;
-  totalSpent: number;
-  totalReservations: number;
-}
+export const createClient = async (client: Omit<Client, 'id' | 'fechaRegistro' | 'ultimaActualizacion'>): Promise<Client> => {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const newClient: Client = {
+      ...client,
+      id: Math.max(...mockClients.map(c => c.id || 0)) + 1,
+      fechaRegistro: new Date().toISOString(),
+      ultimaActualizacion: new Date().toISOString()
+    };
+    mockClients.push(newClient);
+    return newClient;
+  }
+  
+  const response = await apiClient.post(API_BASE_URL, client);
+  return response.data;
+};
 
-export const clientService = {
-  // CRUD básico
-  getAllClients: async (): Promise<Client[]> => {
-    const response = await apiClient.get(API_BASE_URL);
-    return response.data;
-  },
+export const updateClient = async (id: number, client: Partial<Client>): Promise<Client> => {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const index = mockClients.findIndex(c => c.id === id);
+    if (index === -1) {
+      throw new Error('Cliente no encontrado');
+    }
+    const updatedClient = {
+      ...mockClients[index],
+      ...client,
+      ultimaActualizacion: new Date().toISOString()
+    };
+    mockClients[index] = updatedClient;
+    return updatedClient;
+  }
+  
+  const response = await apiClient.put(`${API_BASE_URL}/${id}`, client);
+  return response.data;
+};
 
-  getActiveClients: async (): Promise<Client[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/active`);
-    return response.data;
-  },
+export const deleteClient = async (id: number): Promise<void> => {
+  if (USE_MOCK_DATA) {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const index = mockClients.findIndex(c => c.id === id);
+    if (index === -1) {
+      throw new Error('Cliente no encontrado');
+    }
+    mockClients.splice(index, 1);
+    return;
+  }
+  
+  await apiClient.delete(`${API_BASE_URL}/${id}`);
+};
 
-  getInactiveClients: async (): Promise<Client[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/inactive`);
-    return response.data;
-  },
+export const searchClients = async (query: string): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/search`, {
+    params: { q: query }
+  });
+  return response.data;
+};
 
-  getClientByCode: async (code: number): Promise<Client> => {
-    const response = await apiClient.get(`${API_BASE_URL}/${code}`);
-    return response.data;
-  },
+export const getClientStats = async (): Promise<ClientStats> => {
+  const response = await apiClient.get(`${API_BASE_URL}/stats`);
+  return response.data;
+};
 
-  createClient: async (clientData: ClientData): Promise<Client> => {
-    const response = await apiClient.post(`${API_BASE_URL}/create`, clientData);
-    return response.data;
-  },
+// Funcionalidades adicionales
+export const getClientsByFilters = async (filters: ClientFilters): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/filter`, { params: filters });
+  return response.data;
+};
 
-  updateClient: async (code: number, clientData: Partial<Omit<ClientData, 'password'>>): Promise<Client> => {
-    const response = await apiClient.patch(`${API_BASE_URL}/${code}/update`, clientData);
-    return response.data;
-  },
+export const getClientsByGender = async (genero: 'masculino' | 'femenino' | 'otro'): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/genero/${genero}`);
+  return response.data;
+};
 
-  deleteClient: async (code: number): Promise<void> => {
-    await apiClient.delete(`${API_BASE_URL}/${code}/delete`);
-  },
+export const getClientsByContactMethod = async (metodo: 'telefono' | 'email' | 'ambos'): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/contacto/${metodo}`);
+  return response.data;
+};
 
-  // Búsquedas
-  searchClients: async (term: string): Promise<Client[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/search?term=${encodeURIComponent(term)}`);
-    return response.data;
-  },
+export const getClientsByStatus = async (estado: 'activo' | 'inactivo'): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/estado/${estado}`);
+  return response.data;
+};
 
-  getClientByEmail: async (email: string): Promise<Client> => {
-    const response = await apiClient.get(`${API_BASE_URL}/email/${encodeURIComponent(email)}`);
-    return response.data;
-  },
+export const toggleClientStatus = async (id: number): Promise<Client> => {
+  const response = await apiClient.patch(`${API_BASE_URL}/${id}/toggle-status`);
+  return response.data;
+};
 
-  getClientByPhone: async (phone: string): Promise<Client> => {
-    const response = await apiClient.get(`${API_BASE_URL}/phone/${encodeURIComponent(phone)}`);
-    return response.data;
-  },
+export const activateClient = async (id: number): Promise<Client> => {
+  const response = await apiClient.patch(`${API_BASE_URL}/${id}/activate`);
+  return response.data;
+};
 
-  getClientByCI: async (ci: number): Promise<Client> => {
-    const response = await apiClient.get(`${API_BASE_URL}/ci/${ci}`);
-    return response.data;
-  },
+export const deactivateClient = async (id: number): Promise<Client> => {
+  const response = await apiClient.patch(`${API_BASE_URL}/${id}/deactivate`);
+  return response.data;
+};
 
-  // Estadísticas
-  getGeneralStatistics: async (): Promise<ClientStatistics> => {
-    const response = await apiClient.get(`${API_BASE_URL}/statistics/general`);
-    return response.data;
-  },
+// Más funcionalidades avanzadas
+export const getClientsByCity = async (ciudad: string): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/ciudad/${encodeURIComponent(ciudad)}`);
+  return response.data;
+};
 
-  getTopClients: async (limit: number = 10): Promise<TopClient[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/statistics/top?limit=${limit}`);
-    return response.data;
-  },
+export const getClientsByProfession = async (profesion: string): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/profesion/${encodeURIComponent(profesion)}`);
+  return response.data;
+};
 
-  getInactiveClientsReport: async (days: number = 90): Promise<Client[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/reports/inactive-clients?days=${days}`);
-    return response.data;
-  },
+export const getClientsByAgeRange = async (edadMin: number, edadMax: number): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/edad`, {
+    params: { min: edadMin, max: edadMax }
+  });
+  return response.data;
+};
 
-  // Filtros
-  getClientsByGender: async (gender: 'male' | 'female'): Promise<Client[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/filter/gender/${gender}`);
-    return response.data;
-  },
+export const getClientsByDateRange = async (fechaInicio: string, fechaFin: string): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/fecha-registro`, {
+    params: { inicio: fechaInicio, fin: fechaFin }
+  });
+  return response.data;
+};
 
-  getClientsByContactMethod: async (method: 'phone' | 'email' | 'whatsapp'): Promise<Client[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/filter/contact-method/${method}`);
-    return response.data;
-  },
+export const getClientsBirthdaysSoon = async (dias: number = 30): Promise<Client[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/cumpleanos`, {
+    params: { dias }
+  });
+  return response.data;
+};
 
-  // Información específica del cliente
-  getClientStatistics: async (code: number): Promise<unknown> => {
-    const response = await apiClient.get(`${API_BASE_URL}/${code}/statistics`);
-    return response.data;
-  },
+export const updateClientNotes = async (id: number, notas: string): Promise<Client> => {
+  const response = await apiClient.patch(`${API_BASE_URL}/${id}/notas`, { notas });
+  return response.data;
+};
 
-  getClientHistory: async (code: number): Promise<unknown> => {
-    const response = await apiClient.get(`${API_BASE_URL}/${code}/history`);
-    return response.data;
-  },
+export const checkEmailExists = async (email: string, excludeId?: number): Promise<boolean> => {
+  const response = await apiClient.get(`${API_BASE_URL}/check-email`, {
+    params: { email, excludeId }
+  });
+  return response.data.exists;
+};
 
-  getClientReservations: async (code: number): Promise<unknown[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/${code}/reservations`);
-    return response.data;
-  },
+export const checkDocumentExists = async (
+  tipoDocumento: string, 
+  numeroDocumento: string, 
+  excludeId?: number
+): Promise<boolean> => {
+  const response = await apiClient.get(`${API_BASE_URL}/check-document`, {
+    params: { tipoDocumento, numeroDocumento, excludeId }
+  });
+  return response.data.exists;
+};
 
-  getClientVehicles: async (code: number): Promise<unknown[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/${code}/vehicles`);
-    return response.data;
-  },
+export const getUniqueCities = async (): Promise<string[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/ciudades`);
+  return response.data;
+};
+
+export const getUniqueProfessions = async (): Promise<string[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/profesiones`);
+  return response.data;
 };

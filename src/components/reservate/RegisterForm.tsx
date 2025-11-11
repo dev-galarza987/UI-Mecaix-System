@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { reservateService, type ReservateData } from '../../services/reservateService';
-import { clientService, type Client } from '../../services/clientService';
+import { getAllClients, type Client } from '../../services/clientService';
 import { serviceService, type Service } from '../../services/serviceService';
 import { useNavigate } from 'react-router-dom';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
@@ -46,7 +46,7 @@ export default function ReservateRegisterForm() {
     const fetchData = async () => {
       try {
         const [clientsData, servicesData] = await Promise.all([
-          clientService.getAllClients(),
+          getAllClients(),
           serviceService.getAllServices(),
         ]);
         setClients(clientsData);
@@ -184,8 +184,8 @@ export default function ReservateRegisterForm() {
                   </FormControl>
                   <SelectContent>
                     {clients.map(client => (
-                      <SelectItem key={client.id} value={client.id.toString()}>
-                        {client.name} {client.lastname}
+                      <SelectItem key={client.id} value={client.id?.toString() || ''}>
+                        {client.nombre} {client.apellido}
                       </SelectItem>
                     ))}
                   </SelectContent>
