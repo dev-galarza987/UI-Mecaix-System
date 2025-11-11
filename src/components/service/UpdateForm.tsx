@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
-import { serviceService, type ServiceData } from '../../services/serviceService';
+import { serviceService, type ServiceData, type Service } from '../../services/serviceService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, AlertCircle, Settings, Eye, DollarSign, FileText } from 'lucide-react';
 
@@ -34,10 +34,10 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function ServiceUpdateForm() {
   const navigate = useNavigate();
-  const { code } = useParams<{ code: string }>();
-  const serviceCode = Number(code);
+  const { id } = useParams<{ id: string }>();
+  const serviceId = Number(id);
   const [isLoading, setIsLoading] = useState(true);
-  const [originalService, setOriginalService] = useState<ServiceData | null>(null);
+  const [originalService, setOriginalService] = useState<Service | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
   const form = useForm<FormValues>({
@@ -74,7 +74,7 @@ export default function ServiceUpdateForm() {
     const fetchService = async () => {
       try {
         setIsLoading(true);
-        const service = await serviceService.getServiceById(serviceCode);
+        const service = await serviceService.getServiceById(serviceId);
         setOriginalService(service);
         form.reset({
           code: String(service.code),
@@ -88,20 +88,26 @@ export default function ServiceUpdateForm() {
         setIsLoading(false);
       }
     };
-    if (serviceCode) {
+    if (serviceId) {
       fetchService();
     }
-  }, [serviceCode, form]);
+  }, [serviceId, form]);
 
   async function onSubmit(values: FormValues) {
     try {
+      if (!originalService) {
+        console.error('No original service found');
+        return;
+      }
+      
       const serviceData: Partial<ServiceData> = {
         code: parseInt(values.code),
         title: values.title,
         description: values.description,
         price: parseFloat(values.price),
       };
-      await serviceService.updateService(serviceCode, serviceData);
+      // Use the original service ID for the update
+      await serviceService.updateService(originalService.id, serviceData);
       navigate('/services/list');
     } catch (error) {
       console.error('Failed to update service', error);

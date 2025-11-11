@@ -26,6 +26,15 @@ export const serviceService = {
     return response.data;
   },
 
+  getServiceByCode: async (code: number): Promise<Service> => {
+    const services = await serviceService.getAllServices();
+    const service = services.find(s => s.code === code);
+    if (!service) {
+      throw new Error(`Service with code ${code} not found`);
+    }
+    return service;
+  },
+
   createService: async (serviceData: ServiceData): Promise<Service> => {
     const response = await apiClient.post(`${API_BASE_URL}/create`, serviceData);
     return response.data;

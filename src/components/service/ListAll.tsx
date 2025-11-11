@@ -448,7 +448,7 @@ export default function ListAll() {
                                       variant="outline"
                                       size="icon"
                                       className="h-8 w-8 hover:bg-amber-50 hover:border-amber-300"
-                                      onClick={() => navigate(`/services/update/${service.code}`)}
+                                      onClick={() => navigate(`/services/update/${service.id}`)}
                                     >
                                       <Edit className="h-4 w-4" />
                                     </Button>
@@ -567,7 +567,7 @@ export default function ListAll() {
                           variant="outline"
                           size="sm"
                           className="flex-1 hover:bg-amber-50 hover:border-amber-300"
-                          onClick={() => navigate(`/services/update/${service.code}`)}
+                          onClick={() => navigate(`/services/update/${service.id}`)}
                         >
                           <Edit className="h-4 w-4 mr-1" />
                           Editar

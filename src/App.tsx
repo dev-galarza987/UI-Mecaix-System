@@ -24,6 +24,7 @@ import { ServicePage } from './components/service/ServicePage';
 import ServiceList from './components/service/ListAll';
 import ServiceRegisterForm from './components/service/RegisterForm';
 import ServiceUpdateForm from './components/service/UpdateForm';
+import ServiceDetail from './components/service/ServiceDetail';
 
 // Reservate Components
 import { ReservatePage } from './components/reservate/ReservatePage';
@@ -65,7 +66,8 @@ function App() {
         <Route path="/services" element={<ServicePage />} />
         <Route path="/services/list" element={<ServiceList />} />
         <Route path="/services/new" element={<ServiceRegisterForm />} />
-        <Route path="/services/update/:code" element={<ServiceUpdateForm />} />
+        <Route path="/services/:id" element={<ServiceDetail />} />
+        <Route path="/services/update/:id" element={<ServiceUpdateForm />} />
 
         {/* Reservate Routes */}
         <Route path="/reservates" element={<ReservatePage />} />
