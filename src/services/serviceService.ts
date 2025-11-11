@@ -1,6 +1,6 @@
-import axios from 'axios';
+import { apiClient } from './apiConfig';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/service`;
+const API_BASE_URL = `/service`;
 
 export interface Service {
   id: number;
@@ -17,26 +17,26 @@ export type ServiceData = Omit<Service, 'id' | 'createdAt' | 'updatedAt'>;
 
 export const serviceService = {
   getAllServices: async (): Promise<Service[]> => {
-    const response = await axios.get(API_BASE_URL);
+    const response = await apiClient.get(API_BASE_URL);
     return response.data;
   },
 
   getServiceById: async (id: number): Promise<Service> => {
-    const response = await axios.get(`${API_BASE_URL}/${id}`);
+    const response = await apiClient.get(`${API_BASE_URL}/${id}`);
     return response.data;
   },
 
   createService: async (serviceData: ServiceData): Promise<Service> => {
-    const response = await axios.post(`${API_BASE_URL}/create`, serviceData);
+    const response = await apiClient.post(`${API_BASE_URL}/create`, serviceData);
     return response.data;
   },
 
   updateService: async (id: number, serviceData: Partial<ServiceData>): Promise<Service> => {
-    const response = await axios.patch(`${API_BASE_URL}/${id}/update`, serviceData);
+    const response = await apiClient.patch(`${API_BASE_URL}/${id}/update`, serviceData);
     return response.data;
   },
 
   deleteService: async (id: number): Promise<void> => {
-    await axios.delete(`${API_BASE_URL}/${id}/delete`);
+    await apiClient.delete(`${API_BASE_URL}/${id}/delete`);
   },
 };

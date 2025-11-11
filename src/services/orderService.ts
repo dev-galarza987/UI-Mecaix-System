@@ -1,10 +1,10 @@
-import axios from 'axios';
+import { apiClient } from './apiConfig';
 import type { Client } from './clientService';
 import type { Mechanic } from './mechanicService';
 import type { Service } from './serviceService';
 import type { Vehicle } from './vehicleService';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/order`;
+const API_BASE_URL = `/order`;
 
 // Estados de orden
 export type OrderStatus = 'pending' | 'in_progress' | 'on_hold' | 'completed' | 'cancelled' | 'invoiced';
@@ -155,47 +155,47 @@ export const orderService = {
         }
       });
     }
-    const response = await axios.get(`${API_BASE_URL}?${params}`);
+    const response = await apiClient.get(`${API_BASE_URL}?${params}`);
     return response.data;
   },
 
   getOrderById: async (id: number): Promise<Order> => {
-    const response = await axios.get(`${API_BASE_URL}/${id}`);
+    const response = await apiClient.get(`${API_BASE_URL}/${id}`);
     return response.data;
   },
 
   getOrderByCode: async (orderCode: string): Promise<Order> => {
-    const response = await axios.get(`${API_BASE_URL}/code/${orderCode}`);
+    const response = await apiClient.get(`${API_BASE_URL}/code/${orderCode}`);
     return response.data;
   },
 
   createOrder: async (orderData: OrderData): Promise<Order> => {
-    const response = await axios.post(API_BASE_URL, orderData);
+    const response = await apiClient.post(API_BASE_URL, orderData);
     return response.data;
   },
 
   updateOrder: async (id: number, updateData: UpdateOrderData): Promise<Order> => {
-    const response = await axios.patch(`${API_BASE_URL}/${id}`, updateData);
+    const response = await apiClient.patch(`${API_BASE_URL}/${id}`, updateData);
     return response.data;
   },
 
   deleteOrder: async (id: number): Promise<void> => {
-    await axios.delete(`${API_BASE_URL}/${id}`);
+    await apiClient.delete(`${API_BASE_URL}/${id}`);
   },
 
   // Gestión de estado
   updateOrderStatus: async (id: number, status: OrderStatus): Promise<Order> => {
-    const response = await axios.patch(`${API_BASE_URL}/${id}/status`, { status });
+    const response = await apiClient.patch(`${API_BASE_URL}/${id}/status`, { status });
     return response.data;
   },
 
   startOrder: async (id: number): Promise<Order> => {
-    const response = await axios.patch(`${API_BASE_URL}/${id}/start`);
+    const response = await apiClient.patch(`${API_BASE_URL}/${id}/start`);
     return response.data;
   },
 
   completeOrder: async (id: number, finalCost?: number, actualHours?: number): Promise<Order> => {
-    const response = await axios.patch(`${API_BASE_URL}/${id}/complete`, {
+    const response = await apiClient.patch(`${API_BASE_URL}/${id}/complete`, {
       finalCost,
       actualHours
     });
@@ -203,48 +203,48 @@ export const orderService = {
   },
 
   cancelOrder: async (id: number, reason?: string): Promise<Order> => {
-    const response = await axios.patch(`${API_BASE_URL}/${id}/cancel`, { reason });
+    const response = await apiClient.patch(`${API_BASE_URL}/${id}/cancel`, { reason });
     return response.data;
   },
 
   // Gestión de servicios en órdenes
   addServiceToOrder: async (orderId: number, serviceData: { serviceId: number; quantity: number; unitPrice?: number }): Promise<OrderService> => {
-    const response = await axios.post(`${API_BASE_URL}/${orderId}/services`, serviceData);
+    const response = await apiClient.post(`${API_BASE_URL}/${orderId}/services`, serviceData);
     return response.data;
   },
 
   updateOrderService: async (orderId: number, orderServiceId: number, updateData: { quantity?: number; unitPrice?: number }): Promise<OrderService> => {
-    const response = await axios.patch(`${API_BASE_URL}/${orderId}/services/${orderServiceId}`, updateData);
+    const response = await apiClient.patch(`${API_BASE_URL}/${orderId}/services/${orderServiceId}`, updateData);
     return response.data;
   },
 
   removeServiceFromOrder: async (orderId: number, orderServiceId: number): Promise<void> => {
-    await axios.delete(`${API_BASE_URL}/${orderId}/services/${orderServiceId}`);
+    await apiClient.delete(`${API_BASE_URL}/${orderId}/services/${orderServiceId}`);
   },
 
   // Consultas específicas
   getOrdersByClient: async (clientCode: number): Promise<Order[]> => {
-    const response = await axios.get(`${API_BASE_URL}/client/${clientCode}`);
+    const response = await apiClient.get(`${API_BASE_URL}/client/${clientCode}`);
     return response.data;
   },
 
   getOrdersByMechanic: async (mechanicId: number): Promise<Order[]> => {
-    const response = await axios.get(`${API_BASE_URL}/mechanic/${mechanicId}`);
+    const response = await apiClient.get(`${API_BASE_URL}/mechanic/${mechanicId}`);
     return response.data;
   },
 
   getOrdersByVehicle: async (vehicleId: number): Promise<Order[]> => {
-    const response = await axios.get(`${API_BASE_URL}/vehicle/${vehicleId}`);
+    const response = await apiClient.get(`${API_BASE_URL}/vehicle/${vehicleId}`);
     return response.data;
   },
 
   getOrdersByStatus: async (status: OrderStatus): Promise<Order[]> => {
-    const response = await axios.get(`${API_BASE_URL}/status/${status}`);
+    const response = await apiClient.get(`${API_BASE_URL}/status/${status}`);
     return response.data;
   },
 
   getOrdersByDateRange: async (startDate: string, endDate: string): Promise<Order[]> => {
-    const response = await axios.get(`${API_BASE_URL}/date-range`, {
+    const response = await apiClient.get(`${API_BASE_URL}/date-range`, {
       params: { startDate, endDate }
     });
     return response.data;
@@ -256,29 +256,29 @@ export const orderService = {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     
-    const response = await axios.get(`${API_BASE_URL}/stats?${params}`);
+    const response = await apiClient.get(`${API_BASE_URL}/stats?${params}`);
     return response.data;
   },
 
   // Facturación
   createInvoice: async (invoiceData: InvoiceData): Promise<Invoice> => {
-    const response = await axios.post(`${API_BASE_URL}/invoice`, invoiceData);
+    const response = await apiClient.post(`${API_BASE_URL}/invoice`, invoiceData);
     return response.data;
   },
 
   getInvoiceByOrderId: async (orderId: number): Promise<Invoice> => {
-    const response = await axios.get(`${API_BASE_URL}/${orderId}/invoice`);
+    const response = await apiClient.get(`${API_BASE_URL}/${orderId}/invoice`);
     return response.data;
   },
 
   updateInvoicePayment: async (invoiceId: number, paymentData: { paymentStatus: PaymentStatus; paymentType?: PaymentType; paymentDate?: string }): Promise<Invoice> => {
-    const response = await axios.patch(`${API_BASE_URL}/invoice/${invoiceId}/payment`, paymentData);
+    const response = await apiClient.patch(`${API_BASE_URL}/invoice/${invoiceId}/payment`, paymentData);
     return response.data;
   },
 
   // Búsqueda avanzada
   searchOrders: async (query: string): Promise<Order[]> => {
-    const response = await axios.get(`${API_BASE_URL}/search`, {
+    const response = await apiClient.get(`${API_BASE_URL}/search`, {
       params: { q: query }
     });
     return response.data;
@@ -286,7 +286,7 @@ export const orderService = {
 
   // Asignación de mecánico
   assignMechanic: async (orderId: number, mechanicId: number): Promise<Order> => {
-    const response = await axios.patch(`${API_BASE_URL}/${orderId}/assign-mechanic`, {
+    const response = await apiClient.patch(`${API_BASE_URL}/${orderId}/assign-mechanic`, {
       mechanicId
     });
     return response.data;
@@ -294,7 +294,7 @@ export const orderService = {
 
   // Calcular costos
   calculateEstimatedCost: async (orderId: number): Promise<{ estimatedCost: number }> => {
-    const response = await axios.get(`${API_BASE_URL}/${orderId}/calculate-cost`);
+    const response = await apiClient.get(`${API_BASE_URL}/${orderId}/calculate-cost`);
     return response.data;
   },
 };

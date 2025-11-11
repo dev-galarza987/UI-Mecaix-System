@@ -1,6 +1,6 @@
-import axios from 'axios';
+import { apiClient } from './apiConfig';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/vehicle`;
+const API_BASE_URL = `/vehicle`;
 
 export interface Vehicle {
   id: number;
@@ -17,26 +17,26 @@ export type VehicleData = Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>;
 
 export const vehicleService = {
   getAllVehicles: async (): Promise<Vehicle[]> => {
-    const response = await axios.get(API_BASE_URL);
+    const response = await apiClient.get(API_BASE_URL);
     return response.data;
   },
 
   getVehicleById: async (id: number): Promise<Vehicle> => {
-    const response = await axios.get(`${API_BASE_URL}/${id}`);
+    const response = await apiClient.get(`${API_BASE_URL}/${id}`);
     return response.data;
   },
 
   createVehicle: async (vehicleData: VehicleData): Promise<Vehicle> => {
-    const response = await axios.post(`${API_BASE_URL}/create`, vehicleData);
+    const response = await apiClient.post(`${API_BASE_URL}/create`, vehicleData);
     return response.data;
   },
 
   updateVehicle: async (id: number, vehicleData: Partial<VehicleData>): Promise<Vehicle> => {
-    const response = await axios.patch(`${API_BASE_URL}/${id}/update`, vehicleData);
+    const response = await apiClient.patch(`${API_BASE_URL}/${id}/update`, vehicleData);
     return response.data;
   },
 
   deleteVehicle: async (id: number): Promise<void> => {
-    await axios.delete(`${API_BASE_URL}/${id}/delete`);
+    await apiClient.delete(`${API_BASE_URL}/${id}/delete`);
   },
 };
