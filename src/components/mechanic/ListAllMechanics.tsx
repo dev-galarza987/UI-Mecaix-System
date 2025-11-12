@@ -393,54 +393,63 @@ export default function ListAllMechanics() {
                             <TableCell className="text-right">
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <Button 
+                                    variant="ghost" 
+                                    className="h-8 w-8 p-0 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                  >
                                     <MoreHorizontal className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuContent 
+                                  align="end" 
+                                  className="w-56 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-slate-200 dark:border-slate-700 shadow-xl rounded-lg"
+                                >
                                   <DropdownMenuItem
                                     onClick={() => navigate(`/mechanics/${mechanic.employeeCode}/view`)}
-                                    className="cursor-pointer"
+                                    className="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group"
                                   >
-                                    <Eye className="h-4 w-4 mr-2" />
-                                    Ver Detalles
+                                    <Eye className="h-4 w-4 mr-3 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300" />
+                                    <span className="font-medium">Ver Detalles</span>
                                   </DropdownMenuItem>
+                                  
                                   <DropdownMenuItem
                                     onClick={() => navigate(`/mechanics/${mechanic.employeeCode}/edit`)}
-                                    className="cursor-pointer"
+                                    className="cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors group"
                                   >
-                                    <Edit3 className="h-4 w-4 mr-2" />
-                                    Editar
+                                    <Edit3 className="h-4 w-4 mr-3 text-orange-600 dark:text-orange-400 group-hover:text-orange-700 dark:group-hover:text-orange-300" />
+                                    <span className="font-medium">Editar</span>
                                   </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
+                                  
+                                  <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-600" />
                                   
                                   {/* Status Update Options */}
                                   {mechanic.status !== 'active' && (
                                     <DropdownMenuItem
                                       onClick={() => handleStatusUpdate(mechanic.employeeCode, 'active')}
-                                      className="cursor-pointer text-green-600"
+                                      className="cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors group"
                                     >
-                                      <Star className="h-4 w-4 mr-2" />
-                                      Activar
+                                      <Star className="h-4 w-4 mr-3 text-green-600 dark:text-green-400 group-hover:text-green-700 dark:group-hover:text-green-300" />
+                                      <span className="font-medium text-green-700 dark:text-green-400">Activar</span>
                                     </DropdownMenuItem>
                                   )}
                                   {mechanic.status !== 'inactive' && (
                                     <DropdownMenuItem
                                       onClick={() => handleStatusUpdate(mechanic.employeeCode, 'inactive')}
-                                      className="cursor-pointer text-yellow-600"
+                                      className="cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors group"
                                     >
-                                      <Clock className="h-4 w-4 mr-2" />
-                                      Desactivar
+                                      <Clock className="h-4 w-4 mr-3 text-yellow-600 dark:text-yellow-400 group-hover:text-yellow-700 dark:group-hover:text-yellow-300" />
+                                      <span className="font-medium text-yellow-700 dark:text-yellow-400">Desactivar</span>
                                     </DropdownMenuItem>
                                   )}
                                   
-                                  <DropdownMenuSeparator />
+                                  <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-600" />
+                                  
                                   <DropdownMenuItem
                                     onClick={() => handleDelete(mechanic.employeeCode)}
-                                    className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    className="cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group"
                                   >
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Eliminar
+                                    <Trash2 className="h-4 w-4 mr-3 text-red-500 dark:text-red-400 group-hover:text-red-600 dark:group-hover:text-red-300" />
+                                    <span className="font-medium text-red-600 dark:text-red-400">Eliminar</span>
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
