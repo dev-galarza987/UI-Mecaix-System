@@ -53,7 +53,7 @@ export default function ListAll() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
-  const [clientToDelete, setClientToDelete] = useState<number | null>(null);
+  const [clientToDelete, setClientToDelete] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards');
   const [sortField, setSortField] = useState<'nombre' | 'apellido' | 'id'>('nombre');
@@ -118,8 +118,8 @@ export default function ListAll() {
     setFilteredClients(filtered);
   }, [searchTerm, clients, sortField, sortDirection]);
 
-  const handleDeleteClick = (id: number) => {
-    setClientToDelete(id);
+  const handleDeleteClick = (code: string) => {
+    setClientToDelete(code);
     setShowDeleteAlert(true);
   };
 
@@ -127,7 +127,7 @@ export default function ListAll() {
     if (clientToDelete !== null) {
       try {
         await deleteClient(clientToDelete);
-        setClients(clients.filter((c) => c.id !== clientToDelete));
+        setClients(clients.filter((c) => c.code?.toString() !== clientToDelete));
       } catch (err) {
         setError('Failed to delete client.');
         console.error(err);
@@ -365,7 +365,7 @@ export default function ListAll() {
                                 <Button
                                   variant="destructive"
                                   size="sm"
-                                  onClick={() => handleDeleteClick(client.id!)}
+                                  onClick={() => handleDeleteClick(client.code?.toString() || '')}
                                   className="hover:bg-red-600"
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -481,7 +481,7 @@ export default function ListAll() {
                                   <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={() => handleDeleteClick(client.id!)}
+                                    onClick={() => handleDeleteClick(client.code?.toString() || '')}
                                     className="hover:bg-red-600"
                                   >
                                     <Trash2 className="h-4 w-4" />

@@ -108,21 +108,35 @@ export default function UpdateForm() {
     }
     
     setSaving(true);
+    setErrors({}); // Limpiar errores previos
     try {
       const clientData: Partial<Client> = {
         nombre: formData.name,
         apellido: formData.lastname,
         telefono: formData.phone
       };
-      await updateClient(clientCode, clientData);
+      
+      console.log('📝 [UPDATE FORM] Iniciando actualización del cliente:', clientCode);
+      console.log('📊 [UPDATE FORM] Datos a actualizar:', clientData);
+      
+      const result = await updateClient(clientCode, clientData);
+      console.log('✅ [UPDATE FORM] Cliente actualizado exitosamente:', result);
       
       // Success animation delay
       setTimeout(() => {
         navigate('/clients/list');
       }, 1000);
     } catch (error) {
-      console.error('Failed to update client', error);
-      setErrors({ submit: 'Error al actualizar el cliente. Inténtalo nuevamente.' });
+      console.error('❌ [UPDATE FORM] Error al actualizar cliente:', error);
+      console.error('❌ [UPDATE FORM] Tipo de error:', typeof error);
+      console.error('❌ [UPDATE FORM] Error completo:', JSON.stringify(error, null, 2));
+      
+      // Solo mostrar error si realmente falló
+      if (error instanceof Error) {
+        setErrors({ submit: `Error al actualizar el cliente: ${error.message}` });
+      } else {
+        setErrors({ submit: 'Error al actualizar el cliente. Inténtalo nuevamente.' });
+      }
     } finally {
       setSaving(false);
     }

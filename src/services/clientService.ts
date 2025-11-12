@@ -302,7 +302,19 @@ export const updateClient = async (code: number, client: Partial<Client>): Promi
     
     // Usar PATCH en lugar de PUT y el endpoint correcto /update
     const response = await apiClient.patch<BackendClient>(`${API_BASE_URL}/${code}/update`, backendData);
-    console.log('✅ [CLIENT SERVICE] Cliente actualizado exitosamente:', response.data);
+    console.log('✅ [CLIENT SERVICE] Respuesta del servidor - Status:', response.status);
+    console.log('✅ [CLIENT SERVICE] Respuesta del servidor - Data:', response.data);
+    
+    // Verificar que la respuesta sea exitosa
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`Error del servidor: ${response.status}`);
+    }
+    
+    // Si no hay data en la respuesta, considerar como éxito
+    if (!response.data) {
+      console.log('✅ [CLIENT SERVICE] Actualización exitosa sin datos de respuesta');
+      return { ...client, code: Number(code) } as Client; // Retornar los datos actualizados
+    }
     
     // Transformar la respuesta del backend al formato del frontend
     const transformedResponse = transformBackendClient(response.data);
@@ -310,18 +322,31 @@ export const updateClient = async (code: number, client: Partial<Client>): Promi
     
     return transformedResponse;
   } catch (error: any) {
-    console.error('❌ [CLIENT SERVICE] Error actualizando cliente:', error);
+    console.error('❌ [CLIENT SERVICE] Error completo:', error);
+    console.error('❌ [CLIENT SERVICE] Error response:', error.response);
+    console.error('❌ [CLIENT SERVICE] Error status:', error.response?.status);
+    console.error('❌ [CLIENT SERVICE] Error data:', error.response?.data);
+    
     if (error.response?.status === 404) {
       throw new Error('Cliente no encontrado');
+    } else if (error.response?.status === 400) {
+      throw new Error('Datos inválidos para actualizar el cliente');
+    } else if (error.response?.status >= 500) {
+      throw new Error('Error interno del servidor');
+    } else if (error.response) {
+      throw new Error(`Error del servidor: ${error.response.status}`);
+    } else if (error.request) {
+      throw new Error('No se pudo conectar con el servidor');
+    } else {
+      throw new Error('Error inesperado al actualizar el cliente');
     }
-    throw error;
   }
 };
 
-export const deleteClient = async (id: number): Promise<void> => {
+export const deleteClient = async (code: string): Promise<void> => {
   if (USE_MOCK_DATA) {
     await new Promise(resolve => setTimeout(resolve, 300));
-    const index = mockClients.findIndex(c => c.id === id);
+    const index = mockClients.findIndex(c => c.code?.toString() === code);
     if (index === -1) {
       throw new Error('Cliente no encontrado');
     }
@@ -329,7 +354,7 @@ export const deleteClient = async (id: number): Promise<void> => {
     return;
   }
   
-  await apiClient.delete(`${API_BASE_URL}/${id}`);
+  await apiClient.delete(`${API_BASE_URL}/${code}/delete`);
 };
 
 export const searchClients = async (query: string): Promise<Client[]> => {
