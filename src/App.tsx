@@ -37,6 +37,7 @@ import MechanicPage from './components/mechanic/MechanicPage';
 import ListAllMechanics from './components/mechanic/ListAllMechanics';
 import CreateMechanic from './components/mechanic/CreateMechanic';
 import UpdateMechanic from './components/mechanic/UpdateMechanic';
+import MechanicDetail from './components/mechanic/MechanicDetail';
 
 // Test Components
 import ApiTest from './components/test/ApiTest';
@@ -88,6 +89,7 @@ function App() {
         <Route path="/mechanics" element={<MechanicPage />} />
         <Route path="/mechanics/list" element={<ListAllMechanics />} />
         <Route path="/mechanics/create" element={<CreateMechanic />} />
+        <Route path="/mechanics/:employeeCode/view" element={<MechanicDetail />} />
         <Route path="/mechanics/:employeeCode/edit" element={<UpdateMechanic />} />
         
         {/* Test Routes */}

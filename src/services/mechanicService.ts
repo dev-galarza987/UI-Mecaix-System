@@ -147,8 +147,23 @@ export const mechanicService = {
   },
 
   getMechanicByCode: async (code: string): Promise<Mechanic> => {
+    console.log('🔍 [MECHANIC SERVICE] Buscando mecánico por código:', code);
     const response = await apiClient.get(`${API_BASE_URL}/${code}`);
-    return response.data;
+    console.log('📋 [MECHANIC SERVICE] Respuesta del mecánico individual:', response.data);
+    
+    // Verificar si la respuesta contiene un mecánico individual o está envuelto
+    let mechanicData = response.data;
+    
+    // Si la respuesta tiene una estructura envuelta, extraer el mecánico
+    if (mechanicData.mechanic) {
+      mechanicData = mechanicData.mechanic;
+    }
+    
+    console.log('🔄 [MECHANIC SERVICE] Transformando mecánico individual:', mechanicData);
+    const transformedMechanic = transformBackendMechanic(mechanicData);
+    console.log('✅ [MECHANIC SERVICE] Mecánico transformado:', transformedMechanic);
+    
+    return transformedMechanic;
   },
 
   getMechanicByEmployeeCode: async (code: string): Promise<Mechanic> => {
