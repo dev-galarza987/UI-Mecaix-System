@@ -32,6 +32,12 @@ import ReservateList from './components/reservate/ListAll';
 import ReservateRegisterForm from './components/reservate/RegisterForm';
 import ReservateUpdateForm from './components/reservate/UpdateForm';
 
+// Mechanic Components
+import MechanicPage from './components/mechanic/MechanicPage';
+import ListAllMechanics from './components/mechanic/ListAllMechanics';
+import CreateMechanic from './components/mechanic/CreateMechanic';
+import UpdateMechanic from './components/mechanic/UpdateMechanic';
+
 // Error Components
 import { NotFoundPage } from './components/error/Not-Found-404';
 
@@ -74,6 +80,12 @@ function App() {
         <Route path="/reservates/list" element={<ReservateList />} />
         <Route path="/reservates/new" element={<ReservateRegisterForm />} />
         <Route path="/reservates/update/:code" element={<ReservateUpdateForm />} />
+
+        {/* Mechanic Routes */}
+        <Route path="/mechanics" element={<MechanicPage />} />
+        <Route path="/mechanics/list" element={<ListAllMechanics />} />
+        <Route path="/mechanics/create" element={<CreateMechanic />} />
+        <Route path="/mechanics/:employeeCode/edit" element={<UpdateMechanic />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

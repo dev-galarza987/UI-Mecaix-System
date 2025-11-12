@@ -12,6 +12,7 @@ const modules = [
   { name: "Clients", path: "/clients" },
   { name: "Vehicles", path: "/vehicles" },
   { name: "Services", path: "/services" },
+  { name: "Mechanics", path: "/mechanics" },
   { name: "Reservations", path: "/reservates" },
 ];
 
