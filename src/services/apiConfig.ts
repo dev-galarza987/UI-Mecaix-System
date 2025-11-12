@@ -3,7 +3,7 @@ import type { AxiosResponse } from 'axios';
 
 // Configuración base de la API
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api/v1',
+  BASE_URL: import.meta.env.VITE_URL_PUBLIC_API || 'http://localhost:4000/api/v1',
   TIMEOUT: 30000, // 30 segundos
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 segundo
@@ -29,6 +29,13 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
+});
+
+// Log inicial para debugging
+console.log('🔧 [API CONFIG] Configuración inicial:', {
+  baseURL: API_CONFIG.BASE_URL,
+  env: import.meta.env.VITE_URL_PUBLIC_API,
+  fallback: 'http://localhost:4000/api/v1'
 });
 
 // Interceptor de request - agregar token de autorización

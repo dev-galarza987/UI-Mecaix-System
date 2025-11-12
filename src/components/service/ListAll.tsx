@@ -12,99 +12,65 @@ import {
   Search, 
   Grid3X3, 
   List,
-  Star,
-  Clock,
   Wrench,
   Eye
 } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface ServiceData {
-  id: number;
-  code: string;
-  title: string;
-  description: string;
-  price: number;
-  category?: string;
-  duration?: number;
-  rating?: number;
-  isActive?: boolean;
-  createdAt?: string;
-}
+import { serviceService, type Service } from '../../services/serviceService';
 
 export default function ListAll() {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState<'code' | 'title' | 'price' | 'rating'>('code');
+  const [sortBy, setSortBy] = useState<'code' | 'title' | 'price'>('code');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [priceRange, setPriceRange] = useState<'all' | 'low' | 'medium' | 'high'>('all');
-  const [services, setServices] = useState<ServiceData[]>([
-    {
-      id: 1,
-      code: "SRV001",
-      title: "Cambio de Aceite",
-      description: "Cambio de aceite motor con filtro incluido",
-      price: 45.50,
-      category: "Mantenimiento",
-      duration: 30,
-      rating: 4.8,
-      isActive: true,
-      createdAt: "2024-01-15"
-    },
-    {
-      id: 2,
-      code: "SRV002", 
-      title: "Alineación y Balanceo",
-      description: "Servicio completo de alineación y balanceado de ruedas",
-      price: 120.00,
-      category: "Suspensión",
-      duration: 90,
-      rating: 4.6,
-      isActive: true,
-      createdAt: "2024-01-10"
-    },
-    {
-      id: 3,
-      code: "SRV003",
-      title: "Diagnóstico Computarizado",
-      description: "Diagnóstico completo del sistema electrónico del vehículo",
-      price: 85.75,
-      category: "Electrónica",
-      duration: 60,
-      rating: 4.9,
-      isActive: true,
-      createdAt: "2024-01-08"
-    },
-    {
-      id: 4,
-      code: "SRV004",
-      title: "Cambio de Frenos",
-      description: "Reemplazo de pastillas y discos de freno delanteros",
-      price: 180.25,
-      category: "Frenos",
-      duration: 120,
-      rating: 4.7,
-      isActive: false,
-      createdAt: "2024-01-05"
-    }
-  ]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        console.log('📋 [SERVICE LIST] Iniciando carga de servicios...');
+        setLoading(true);
+        const data = await serviceService.getAllServices();
+        console.log('📋 [SERVICE LIST] Datos recibidos:', data);
+        console.log('📋 [SERVICE LIST] Tipo de datos:', typeof data);
+        console.log('📋 [SERVICE LIST] Es array?:', Array.isArray(data));
+        if (Array.isArray(data) && data.length > 0) {
+          console.log('📋 [SERVICE LIST] Primer servicio completo:', data[0]);
+          console.log('📋 [SERVICE LIST] Code del primer servicio:', data[0].code);
+          console.log('📋 [SERVICE LIST] ID del primer servicio:', data[0].id);
+        }
+        setServices(data);
+        setError(null);
+      } catch (err) {
+        console.error('❌ [SERVICE LIST] Error al cargar servicios:', err);
+        setError('Failed to fetch services.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
 
   const categories = useMemo(() => {
-    const cats = Array.from(new Set(services.map(service => service.category).filter(Boolean)));
-    return ['all', ...cats];
-  }, [services]);
+    // Como la API no tiene categorías, las removemos por ahora
+    return ['all'];
+  }, []);
 
   const filteredServices = useMemo(() => {
     const filtered = services.filter(service => {
       const matchesSearch = 
-        service.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.code.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
         service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         service.description.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesCategory = selectedCategory === 'all' || service.category === selectedCategory;
+      // Solo filtro por categoría si fuera 'all' ya que no tenemos categorías
+      const matchesCategory = selectedCategory === 'all';
       
       const matchesPriceRange = 
         priceRange === 'all' ||
@@ -144,31 +110,37 @@ export default function ListAll() {
     return filtered;
   }, [services, searchTerm, selectedCategory, sortBy, sortOrder, priceRange]);
 
-  const handleDelete = (id: number) => {
-    setServices(services.filter(service => service.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await serviceService.deleteService(id);
+      setServices(services.filter(service => service.id !== id));
+    } catch (err) {
+      console.error('Error al eliminar servicio:', err);
+      setError('Error al eliminar el servicio.');
+    }
   };
 
-  const getPriceColor = (price: number) => {
-    if (price < 50) return 'text-green-600 dark:text-green-400';
-    if (price < 150) return 'text-amber-600 dark:text-amber-400';
-    return 'text-red-600 dark:text-red-400';
-  };
-
-  const getRatingStars = (rating?: number) => {
-    if (!rating) return null;
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    
+  if (loading) {
     return (
-      <div className="flex items-center gap-1">
-        {[...Array(fullStars)].map((_, i) => (
-          <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
-        ))}
-        {hasHalfStar && <Star className="h-3 w-3 fill-amber-200 text-amber-400" />}
-        <span className="text-xs text-slate-600 dark:text-slate-400 ml-1">{rating}</span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-lg text-slate-600 dark:text-slate-400">Cargando servicios...</p>
+        </div>
       </div>
     );
-  };
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-lg text-red-600">Error: {error}</p>
+          <Button onClick={() => window.location.reload()}>Reintentar</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-violet-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
@@ -331,7 +303,7 @@ export default function ListAll() {
                     value={`${sortBy}-${sortOrder}`}
                     onChange={(e) => {
                       const [field, order] = e.target.value.split('-');
-                      setSortBy(field as 'code' | 'title' | 'price' | 'rating');
+                      setSortBy(field as 'code' | 'title' | 'price');
                       setSortOrder(order as 'asc' | 'desc');
                     }}
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-purple-500"
@@ -367,11 +339,7 @@ export default function ListAll() {
                       <TableRow>
                         <TableHead className="font-semibold">Código</TableHead>
                         <TableHead className="font-semibold">Servicio</TableHead>
-                        <TableHead className="font-semibold">Categoría</TableHead>
-                        <TableHead className="font-semibold">Duración</TableHead>
-                        <TableHead className="font-semibold">Calificación</TableHead>
                         <TableHead className="font-semibold">Precio</TableHead>
-                        <TableHead className="font-semibold">Estado</TableHead>
                         <TableHead className="font-semibold">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -395,33 +363,8 @@ export default function ListAll() {
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
-                              {service.category}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1 text-sm">
-                              <Clock className="h-3 w-3" />
-                              {service.duration}min
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {getRatingStars(service.rating)}
-                          </TableCell>
-                          <TableCell className={`font-bold ${getPriceColor(service.price)}`}>
+                          <TableCell className="font-bold text-green-600">
                             ${service.price.toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge 
-                              variant={service.isActive ? "default" : "secondary"}
-                              className={service.isActive 
-                                ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
-                                : "bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300"
-                              }
-                            >
-                              {service.isActive ? 'Activo' : 'Inactivo'}
-                            </Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
@@ -505,15 +448,6 @@ export default function ListAll() {
                         <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs">
                           {service.code}
                         </Badge>
-                        <Badge 
-                          variant={service.isActive ? "default" : "secondary"}
-                          className={service.isActive 
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs"
-                            : "bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 text-xs"
-                          }
-                        >
-                          {service.isActive ? 'Activo' : 'Inactivo'}
-                        </Badge>
                       </div>
                       <CardTitle className="text-lg leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                         {service.title}
@@ -526,28 +460,8 @@ export default function ListAll() {
 
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">Categoría:</span>
-                          <Badge variant="outline" className="text-xs">
-                            {service.category}
-                          </Badge>
-                        </div>
-
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">Duración:</span>
-                          <div className="flex items-center gap-1 text-sm">
-                            <Clock className="h-3 w-3" />
-                            {service.duration}min
-                          </div>
-                        </div>
-
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">Calificación:</span>
-                          {getRatingStars(service.rating)}
-                        </div>
-
-                        <div className="flex justify-between items-center">
                           <span className="text-sm text-slate-600 dark:text-slate-400">Precio:</span>
-                          <span className={`font-bold text-lg ${getPriceColor(service.price)}`}>
+                          <span className="font-bold text-lg text-green-600">
                             ${service.price.toFixed(2)}
                           </span>
                         </div>

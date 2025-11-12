@@ -112,12 +112,30 @@ export default function ListAllMechanics() {
 
   const fetchMechanics = async () => {
     try {
+      console.log('📋 [MECHANICS LIST] Iniciando carga de mecánicos...');
       setLoading(true);
       const response = await mechanicService.getAllMechanics(currentPage, 10);
-      setMechanics(response.data);
-      setTotalPages(response.pagination.totalPages);
+      console.log('📋 [MECHANICS LIST] Respuesta completa:', response);
+      console.log('📋 [MECHANICS LIST] Data:', response.data);
+      console.log('📋 [MECHANICS LIST] Pagination:', response.pagination);
+      
+      if (response && response.data && Array.isArray(response.data)) {
+        setMechanics(response.data);
+        if (response.pagination && response.pagination.totalPages) {
+          setTotalPages(response.pagination.totalPages);
+        } else {
+          console.warn('📋 [MECHANICS LIST] No se encontró pagination.totalPages, usando 1');
+          setTotalPages(1);
+        }
+      } else {
+        console.error('📋 [MECHANICS LIST] Estructura de respuesta inválida:', response);
+        setMechanics([]);
+        setTotalPages(1);
+      }
     } catch (error) {
-      console.error('Error fetching mechanics:', error);
+      console.error('❌ [MECHANICS LIST] Error fetching mechanics:', error);
+      setMechanics([]); // Asegurar que siempre sea un array
+      setTotalPages(1);
       toast.error('Error al cargar los mecánicos');
     } finally {
       setLoading(false);
@@ -130,7 +148,13 @@ export default function ListAllMechanics() {
   }, [currentPage]);
 
   useEffect(() => {
-    // Filter mechanics based on search term
+    // Filter mechanics based on search term - asegurar que mechanics sea un array válido
+    if (!Array.isArray(mechanics)) {
+      console.warn('📋 [MECHANICS LIST] mechanics no es un array válido:', mechanics);
+      setFilteredMechanics([]);
+      return;
+    }
+    
     const filtered = mechanics.filter(mechanic =>
       mechanic.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       mechanic.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||

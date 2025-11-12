@@ -48,11 +48,102 @@ export interface PaginatedResponse<T> {
   };
 }
 
+// Interface para los datos que vienen del backend
+interface BackendMechanic {
+  id: number;
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  type: string;
+  hireDate: string;
+  yearsExperience: number;
+  experienceLevel: string;
+  status: string;
+  specialties: string[] | string; // Puede venir como array o string separado por espacios
+  hourlyRate: string; // Viene como string
+  workScheduleStart: string;
+  workScheduleEnd: string;
+  workDays: string[] | string; // Puede venir como array o string separado por espacios
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Función para transformar los datos del backend al formato del frontend
+const transformBackendMechanic = (backendMechanic: BackendMechanic): Mechanic => {
+  return {
+    id: backendMechanic.id,
+    employeeCode: backendMechanic.employeeCode,
+    firstName: backendMechanic.firstName,
+    lastName: backendMechanic.lastName,
+    phone: backendMechanic.phone,
+    type: 'mechanic',
+    hireDate: backendMechanic.hireDate,
+    yearsExperience: backendMechanic.yearsExperience,
+    experienceLevel: backendMechanic.experienceLevel as ExperienceLevel,
+    status: backendMechanic.status as MechanicStatus,
+    specialties: Array.isArray(backendMechanic.specialties) 
+      ? backendMechanic.specialties as Specialty[] 
+      : backendMechanic.specialties 
+        ? backendMechanic.specialties.trim().split(/\s+/).filter((s: string) => s.length > 0) as Specialty[] 
+        : [],
+    hourlyRate: parseFloat(backendMechanic.hourlyRate) || 0,
+    workScheduleStart: backendMechanic.workScheduleStart,
+    workScheduleEnd: backendMechanic.workScheduleEnd,
+    workDays: Array.isArray(backendMechanic.workDays) 
+      ? backendMechanic.workDays as WorkDay[] 
+      : backendMechanic.workDays 
+        ? backendMechanic.workDays.trim().split(/\s+/).filter((d: string) => d.length > 0) as WorkDay[] 
+        : [],
+    isActive: backendMechanic.isActive,
+    createdAt: backendMechanic.createdAt,
+    updatedAt: backendMechanic.updatedAt
+  };
+};
+
 export const mechanicService = {
   // CRUD básico
   getAllMechanics: async (page: number = 1, limit: number = 10): Promise<PaginatedResponse<Mechanic>> => {
+    console.log('🔄 [MECHANIC SERVICE] Solicitando mecánicos - página:', page, 'límite:', limit);
     const response = await apiClient.get(`${API_BASE_URL}?page=${page}&limit=${limit}`);
-    return response.data;
+    console.log('📊 [MECHANIC SERVICE] Respuesta cruda de API:', response.data);
+    console.log('📊 [MECHANIC SERVICE] Tipo de respuesta:', typeof response.data);
+    console.log('📊 [MECHANIC SERVICE] Keys de la respuesta:', Object.keys(response.data || {}));
+    console.log('📊 [MECHANIC SERVICE] Estructura completa:', JSON.stringify(response.data, null, 2));
+    
+    // La API real devuelve: { mechanics: [], ... } en lugar de { data: [], ... }
+    // Necesitamos transformarlo al formato esperado por el frontend
+    const apiResponse = response.data;
+    
+    // Transformar los datos del backend al formato del frontend
+    const rawData = apiResponse.mechanics || apiResponse.data || apiResponse;
+    console.log('📊 [MECHANIC SERVICE] Datos crudos para transformar:', rawData);
+    console.log('📊 [MECHANIC SERVICE] Tipo de datos crudos:', typeof rawData);
+    console.log('📊 [MECHANIC SERVICE] Es array?:', Array.isArray(rawData));
+    
+    if (!Array.isArray(rawData)) {
+      console.error('❌ [MECHANIC SERVICE] Los datos no son un array:', rawData);
+      console.error('❌ [MECHANIC SERVICE] Tipo actual:', typeof rawData);
+      console.error('❌ [MECHANIC SERVICE] Constructor:', rawData?.constructor?.name);
+      throw new Error('Formato de respuesta inválido de la API');
+    }
+    
+    const transformedData = rawData.map(transformBackendMechanic);
+    console.log('🔄 [MECHANIC SERVICE] Datos transformados:', transformedData);
+    
+    const result = {
+      data: transformedData,
+      pagination: {
+        page: apiResponse.page || page,
+        limit: limit,
+        total: apiResponse.total || transformedData.length,
+        totalPages: apiResponse.lastPage || Math.ceil((apiResponse.total || transformedData.length) / limit)
+      }
+    };
+    
+    console.log('✅ [MECHANIC SERVICE] Resultado final:', result);
+    return result;
   },
 
   getMechanicByCode: async (code: string): Promise<Mechanic> => {
