@@ -1,182 +1,344 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { 
+  ArrowLeft, 
+  Plus, 
+  Search, 
+  Filter, 
+  Grid, 
+  List, 
+  Edit, 
+  Trash2, 
+  Eye,
+  Calendar,
+  User,
+  DollarSign,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  MoreHorizontal,
+  SortAsc,
+  SortDesc
+} from 'lucide-react';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { reservateService, type Reservate } from '../../services/reservateService';
-import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Spinner } from '@/components/ui/spinner';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
-export default function ReservateList() {
+type ViewMode = 'table' | 'grid';
+type SortField = 'code' | 'date' | 'client' | 'total' | 'state';
+type SortOrder = 'asc' | 'desc';
+
+const stateColors = {
+  pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  confirmed: 'bg-blue-100 text-blue-800 border-blue-200',
+  in_progress: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  completed: 'bg-green-100 text-green-800 border-green-200',
+  cancelled: 'bg-red-100 text-red-800 border-red-200',
+};
+
+const stateLabels = {
+  pending: 'Pendiente',
+  confirmed: 'Confirmada',
+  in_progress: 'En Progreso',
+  completed: 'Completada',
+  cancelled: 'Cancelada',
+};
+
+const stateIcons = {
+  pending: Clock,
+  confirmed: CheckCircle,
+  in_progress: AlertCircle,
+  completed: CheckCircle,
+  cancelled: XCircle,
+};
+
+export default function ReservateListAll() {
+  const navigate = useNavigate();
   const [reservates, setReservates] = useState<Reservate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
-  const [reservateToDelete, setReservateToDelete] = useState<number | null>(null);
-  const navigate = useNavigate();
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [stateFilter, setStateFilter] = useState<string>('all');
+  const [sortField, setSortField] = useState<SortField>('date');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; reservate: Reservate | null }>({
+    open: false,
+    reservate: null,
+  });
 
   useEffect(() => {
-    const fetchReservates = async () => {
-      try {
-        setLoading(true);
-        const data = await reservateService.getAllReservates();
-        setReservates(data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch reservations.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchReservates();
   }, []);
 
-  const handleDeleteClick = (code: number) => {
-    setReservateToDelete(code);
-    setShowDeleteAlert(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (reservateToDelete !== null) {
-      try {
-        await reservateService.deleteReservate(reservateToDelete);
-        setReservates(reservates.filter((r) => r.code !== reservateToDelete));
-      } catch (err) {
-        setError('Failed to delete reservation.');
-        console.error(err);
-      }
+  const fetchReservates = async () => {
+    try {
+      setLoading(true);
+      const data = await reservateService.getAllReservates();
+      setReservates(data);
+    } catch (error) {
+      console.error('Error fetching reservates:', error);
+      toast.error('Error al cargar las reservaciones');
+    } finally {
+      setLoading(false);
     }
-    setShowDeleteAlert(false);
-    setReservateToDelete(null);
   };
 
-  if (loading) return <Spinner />;
-  if (error) return <p className="text-red-500">{error}</p>;
+  const handleDelete = async (reservate: Reservate) => {
+    try {
+      await reservateService.deleteReservate(reservate.codeReservate);
+      toast.success('Reservación eliminada exitosamente');
+      fetchReservates();
+    } catch (error) {
+      console.error('Error deleting reservate:', error);
+      toast.error('Error al eliminar la reservación');
+    }
+    setDeleteDialog({ open: false, reservate: null });
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const filteredAndSortedReservates = useMemo(() => {
+    let filtered = reservates.filter(reservate => {
+      const matchesSearch = 
+        reservate.client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reservate.client?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reservate.codeReservate?.toString().includes(searchTerm) ||
+        reservate.services?.some((service: any) => 
+          service.title?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+      const matchesState = stateFilter === 'all' || reservate.state === stateFilter;
+
+      return matchesSearch && matchesState;
+    });
+
+    filtered.sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortField) {
+        case 'code':
+          comparison = (a.codeReservate || 0) - (b.codeReservate || 0);
+          break;
+        case 'date':
+          comparison = new Date(a.reservationDate).getTime() - new Date(b.reservationDate).getTime();
+          break;
+        case 'client':
+          const clientA = `${a.client?.name || ''} ${a.client?.lastName || ''}`;
+          const clientB = `${b.client?.name || ''} ${b.client?.lastName || ''}`;
+          comparison = clientA.localeCompare(clientB);
+          break;
+        case 'total':
+          comparison = (a.totalPrice || 0) - (b.totalPrice || 0);
+          break;
+        case 'state':
+          comparison = (a.state || '').localeCompare(b.state || '');
+          break;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  }, [reservates, searchTerm, stateFilter, sortField, sortOrder]);
 
   return (
-    <TooltipProvider>
-      <div className="container mx-auto p-4">
-        <Button variant="outline" onClick={() => navigate('/reservates')} className="mb-4">
-          Regresar al menu de Reservaciones
-        </Button>
-        <h1 className="text-3xl font-bold mb-6 text-primary">Lista de Reservaciones</h1>
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b-0">
-                <TableHead>Código</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Precio Total</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Servicios</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {reservates.map((reservate) => (
-                <Collapsible asChild key={reservate.id}>
-                  <>
-                    <TableRow className="hover:bg-muted/50">
-                      <TableCell className="font-mono text-muted-foreground">{reservate.code}</TableCell>
-                      <TableCell>{reservate.client.name} {reservate.client.lastname}</TableCell>
-                      <TableCell>{new Date(reservate.reservationDate).toLocaleDateString()}</TableCell>
-                      <TableCell>Bs.{reservate.totalPrice}</TableCell>
-                      <TableCell>{reservate.state}</TableCell>
-                      <TableCell>
-                        <CollapsibleTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <ChevronDown className="h-4 w-4" />
-                            <span className="sr-only">Palanca de servicios</span>
-                          </Button>
-                        </CollapsibleTrigger>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="icon" onClick={() => navigate(`/reservates/update/${reservate.code}`)}>
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" />
-                              </svg>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Editar reservación</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="destructive" size="icon" className="ml-2" onClick={() => handleDeleteClick(reservate.code)}>
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
-                              </svg>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Eliminar reservación</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                    <CollapsibleContent asChild>
-                      <TableRow>
-                        <TableCell colSpan={7}>
-                          <div className="p-4 bg-muted/50 rounded-md">
-                            <h4 className="font-semibold mb-2">Servicios para la reservación {reservate.code}</h4>
-                            <ul>
-                              {reservate.services.map(service => (
-                                <li key={service.id} className="flex justify-between">
-                                  <span>{service.title}</span>
-                                  <span>Bs.{service.price}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    </CollapsibleContent>
-                  </>
-                </Collapsible>
-              ))}
-            </TableBody>
-          </Table>
+    <motion.div 
+      className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-100"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
+          <div className="absolute top-32 right-10 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float-delayed"></div>
+          <div className="absolute bottom-10 left-1/2 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
         </div>
 
-        <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>¿Estás seguro de eliminar esta reservación?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Esta acción no se puede deshacer. Esto eliminará permanentemente la reservación.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete}>Eliminar</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <div className="relative container mx-auto p-6">
+          {/* Header */}
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/reservates')} 
+                className="bg-white/70 backdrop-blur-sm border-emerald-200/50 hover:bg-emerald-50/70 transition-all duration-300"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Volver al menú
+              </Button>
+
+              <Button 
+                onClick={() => navigate('/reservates/register')}
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Nueva Reserva
+              </Button>
+            </div>
+            
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-700 via-green-700 to-teal-700 bg-clip-text text-transparent mb-2">
+              Lista de Reservaciones
+            </h1>
+            <p className="text-emerald-600/80 text-lg">
+              Gestiona todas las reservaciones del sistema
+            </p>
+          </motion.div>
+
+          {/* Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <Card className="mb-6 bg-white/70 backdrop-blur-xl border-emerald-200/50 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                  <div className="flex flex-1 items-center space-x-4">
+                    <div className="relative flex-1 max-w-md">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Buscar por cliente, código o servicio..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 border-emerald-200 focus:border-emerald-400"
+                      />
+                    </div>
+
+                    <Select value={stateFilter} onValueChange={setStateFilter}>
+                      <SelectTrigger className="w-48 border-emerald-200">
+                        <Filter className="h-4 w-4 mr-2" />
+                        <SelectValue placeholder="Filtrar por estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos los estados</SelectItem>
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="confirmed">Confirmada</SelectItem>
+                        <SelectItem value="in_progress">En Progreso</SelectItem>
+                        <SelectItem value="completed">Completada</SelectItem>
+                        <SelectItem value="cancelled">Cancelada</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Separator orientation="vertical" className="h-8" />
+                    <div className="flex bg-emerald-100 rounded-lg p-1">
+                      <Button
+                        variant={viewMode === 'table' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setViewMode('table')}
+                        className={viewMode === 'table' ? 'bg-emerald-600 text-white' : 'text-emerald-600'}
+                      >
+                        <List className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setViewMode('grid')}
+                        className={viewMode === 'grid' ? 'bg-emerald-600 text-white' : 'text-emerald-600'}
+                      >
+                        <Grid className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+              <span className="ml-2 text-emerald-600">Cargando reservaciones...</span>
+            </div>
+          ) : filteredAndSortedReservates.length === 0 ? (
+            <Card className="text-center py-12 bg-white/70 backdrop-blur-xl border-emerald-200/50">
+              <CardContent>
+                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">No se encontraron reservaciones</h3>
+                <p className="text-gray-500 mb-4">
+                  {searchTerm || stateFilter !== 'all' 
+                    ? 'Intenta ajustar los filtros de búsqueda' 
+                    : 'Aún no hay reservaciones registradas'}
+                </p>
+                <Button 
+                  onClick={() => navigate('/reservates/register')}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear primera reserva
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <p>Lista de reservaciones aquí</p>
+          )}
+        </div>
       </div>
-    </TooltipProvider>
+
+      {/* Delete Dialog */}
+      <Dialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open, reservate: null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar eliminación</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro de que quieres eliminar la reservación #{deleteDialog.reservate?.codeReservate}?
+              Esta acción no se puede deshacer.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialog({ open: false, reservate: null })}>
+              Cancelar
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => deleteDialog.reservate && handleDelete(deleteDialog.reservate)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
   );
 }
