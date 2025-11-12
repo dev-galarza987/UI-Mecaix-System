@@ -124,11 +124,13 @@ export default function ReservateListAll() {
 
   const handleDelete = async (reservate: Reservate) => {
     try {
+      console.log('🗑️ [LIST ALL] Iniciando eliminación de reserva:', reservate.code);
       await reservateService.deleteReservate(reservate.code);
+      console.log('✅ [LIST ALL] Reserva eliminada exitosamente');
       toast.success('Reservación eliminada exitosamente');
       fetchReservates();
     } catch (error) {
-      console.error('Error deleting reservate:', error);
+      console.error('❌ [LIST ALL] Error deleting reservate:', error);
       toast.error('Error al eliminar la reservación');
     }
     setDeleteDialog({ open: false, reservate: null });
@@ -409,7 +411,10 @@ export default function ReservateListAll() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => navigate(`/reservates/update/${reservate.code}`)}
+                                  onClick={() => {
+                                    console.log('✏️ [LIST ALL] Navegando a editar reserva:', reservate.code);
+                                    navigate(`/reservates/update/${reservate.code}`);
+                                  }}
                                   className="h-8 w-8 p-0 border-emerald-200 hover:bg-emerald-50"
                                 >
                                   <Pencil className="h-3 w-3" />
@@ -418,7 +423,9 @@ export default function ReservateListAll() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => setDeleteDialog({ open: true, reservate })}
-                                  className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 text-red-600"
+                                  disabled
+                                  title="Funcionalidad temporalmente deshabilitada"
+                                  className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 text-red-600 opacity-50 cursor-not-allowed"
                                 >
                                   <Trash2 className="h-3 w-3" />
                                 </Button>

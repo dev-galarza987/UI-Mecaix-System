@@ -49,7 +49,7 @@ const formSchema = z.object({
 export default function ReservateUpdateForm() {
   const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
-  const reservateCode = Number(code);
+  // code ya es string, no necesitamos convertirlo
 
   const [isLoading, setLoading] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
@@ -62,13 +62,27 @@ export default function ReservateUpdateForm() {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!code) {
+        toast.error('Código de reserva no válido');
+        navigate('/reservates/list');
+        return;
+      }
+
+      console.log('📝 [UPDATE FORM] Iniciando carga de datos para reserva:', code);
+
       try {
         const [clientsData, servicesData, reservateData] = await Promise.all([
           getAllClients(),
           serviceService.getServices(),
-          reservateService.getReservate(reservateCode)
+          reservateService.getReservate(code)
         ]);
         
+        console.log('✅ [UPDATE FORM] Datos cargados:', {
+          clients: clientsData.length,
+          services: servicesData.length,
+          reservate: reservateData
+        });
+
         setClients(clientsData);
         setServices(servicesData);
 
@@ -91,7 +105,7 @@ export default function ReservateUpdateForm() {
     };
 
     fetchData();
-  }, [reservateCode, form]);
+  }, [code, form, navigate]);
 
   // Calculate total price when services change
   useEffect(() => {

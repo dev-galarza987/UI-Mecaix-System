@@ -70,7 +70,13 @@ export const reservateService = {
     }
   },
 
-  getReservateByCode: async (code: number): Promise<Reservate> => {
+  getReservateByCode: async (code: string): Promise<Reservate> => {
+    const response = await apiClient.get(`${API_BASE_URL}/${code}`);
+    return response.data;
+  },
+
+  // Alias para mantener compatibilidad
+  getReservate: async (code: string): Promise<Reservate> => {
     const response = await apiClient.get(`${API_BASE_URL}/${code}`);
     return response.data;
   },
@@ -80,12 +86,20 @@ export const reservateService = {
     return response.data;
   },
 
-  updateReservate: async (code: number, reservateData: Partial<ReservateData>): Promise<Reservate> => {
+  updateReservate: async (code: string, reservateData: Partial<ReservateData>): Promise<Reservate> => {
     const response = await apiClient.patch(`${API_BASE_URL}/${code}/update`, reservateData);
     return response.data;
   },
 
   deleteReservate: async (code: string): Promise<void> => {
-    await apiClient.delete(`${API_BASE_URL}/${code}/delete`);
+    console.log('🗑️ [RESERVATE SERVICE] Eliminando reserva con código:', code);
+    console.log('🌐 [RESERVATE SERVICE] URL:', `${API_BASE_URL}/${code}/delete`);
+    try {
+      const response = await apiClient.delete(`${API_BASE_URL}/${code}/delete`);
+      console.log('✅ [RESERVATE SERVICE] Reserva eliminada exitosamente:', response.status);
+    } catch (error) {
+      console.error('❌ [RESERVATE SERVICE] Error al eliminar reserva:', error);
+      throw error;
+    }
   },
 };
