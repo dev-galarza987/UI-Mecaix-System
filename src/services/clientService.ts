@@ -4,10 +4,11 @@ import { mockClients } from "./mockData";
 const API_BASE_URL = "/client";
 
 // Variable para controlar si usar mock data
-const USE_MOCK_DATA = true; // Cambiar a false cuando el backend esté funcionando
+const USE_MOCK_DATA = false; // Cambiado a false para usar la API real
 
 export interface Client {
   id?: number;
+  code?: number;  // Agregar campo code del backend
   nombre: string;
   apellido: string;
   telefono: string;
@@ -26,6 +27,115 @@ export interface Client {
   notas?: string;
   metodoPrefContacto: 'telefono' | 'email' | 'ambos';
   frecuenciaContacto: 'alta' | 'media' | 'baja';
+}
+
+// Interface para los datos que vienen del backend
+interface BackendClient {
+  id: number;
+  code: number;
+  name: string;
+  lastname: string;
+  phone: string;
+  ci: number;
+  type: string;
+  gender: string;
+  email: string;
+  password: string;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  lastLogin: string;
+  address: string;
+  preferredContactMethod: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Función para transformar datos del backend al formato del frontend
+const transformBackendClient = (backendClient: BackendClient): Client => {
+  console.log('🔄 [TRANSFORM] Datos originales del backend:', backendClient);
+  console.log('🔄 [TRANSFORM] Campo code disponible:', backendClient.code);
+  console.log('🔄 [TRANSFORM] Campo id disponible:', backendClient.id);
+  
+  const transformed = {
+    id: backendClient.id,
+    code: backendClient.code,  // Incluir campo code
+    nombre: backendClient.name,
+    apellido: backendClient.lastname,
+    telefono: backendClient.phone,
+    email: backendClient.email,
+    genero: backendClient.gender === 'male' ? 'masculino' : backendClient.gender === 'female' ? 'femenino' : 'otro' as 'masculino' | 'femenino' | 'otro',
+    fechaNacimiento: '1990-01-01', // Campo no disponible en backend, usar valor por defecto
+    tipoDocumento: 'CI',
+    numeroDocumento: backendClient.ci.toString(),
+    direccion: backendClient.address,
+    ciudad: 'La Paz', // Campo no disponible en backend
+    codigoPostal: '0000', // Campo no disponible en backend
+    profesion: 'No especificada', // Campo no disponible en backend
+    estado: backendClient.isActive ? 'activo' : 'inactivo' as 'activo' | 'inactivo',
+    fechaRegistro: backendClient.createdAt,
+    ultimaActualizacion: backendClient.updatedAt,
+    notas: '',
+    metodoPrefContacto: (backendClient.preferredContactMethod === 'phone' ? 'telefono' : 
+                      backendClient.preferredContactMethod === 'email' ? 'email' : 'ambos') as 'telefono' | 'email' | 'ambos',
+    frecuenciaContacto: 'media' as 'alta' | 'media' | 'baja' // Campo no disponible en backend
+  };
+  
+  console.log('🔄 [TRANSFORM] Datos transformados:', transformed);
+  return transformed;
+};
+
+// Función para transformar datos del frontend al formato del backend (para crear/actualizar)
+const transformToBackendClient = (frontendClient: Partial<Client>): any => {
+  const backendData: any = {};
+  
+  if (frontendClient.nombre) backendData.name = frontendClient.nombre;
+  if (frontendClient.apellido) backendData.lastname = frontendClient.apellido;
+  if (frontendClient.telefono) backendData.phone = frontendClient.telefono;
+  if (frontendClient.email) backendData.email = frontendClient.email;
+  if (frontendClient.direccion) backendData.address = frontendClient.direccion;
+  if (frontendClient.numeroDocumento) backendData.ci = parseInt(frontendClient.numeroDocumento);
+  
+  // Transformar género
+  if (frontendClient.genero) {
+    backendData.gender = frontendClient.genero === 'masculino' ? 'male' : 
+                        frontendClient.genero === 'femenino' ? 'female' : 'other';
+  }
+  
+  // Transformar método de contacto preferido
+  if (frontendClient.metodoPrefContacto) {
+    backendData.preferredContactMethod = frontendClient.metodoPrefContacto === 'telefono' ? 'phone' :
+                                        frontendClient.metodoPrefContacto === 'email' ? 'email' : 'whatsapp';
+  }
+  
+  // Transformar estado
+  if (frontendClient.estado) {
+    backendData.isActive = frontendClient.estado === 'activo';
+  }
+  
+  return backendData;
+};
+
+// Interface para los datos que vienen del backend
+interface BackendClient {
+  id: number;
+  code: number;
+  name: string;
+  lastname: string;
+  phone: string;
+  ci: number;
+  type: string;
+  gender: string;
+  email: string;
+  password: string;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  lastLogin: string;
+  address: string;
+  preferredContactMethod: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ClientFilters {
@@ -81,22 +191,72 @@ export const getAllClients = async (): Promise<Client[]> => {
     return mockClients;
   }
   
-  const response = await apiClient.get(API_BASE_URL);
-  return response.data;
+  console.log('🚀 [CLIENT SERVICE] Iniciando getAllClients...');
+  console.log('🌐 [CLIENT SERVICE] URL base:', API_BASE_URL);
+  console.log('🌐 [CLIENT SERVICE] URL completa:', `http://localhost:4000/api/v1${API_BASE_URL}`);
+  console.log('🔧 [CLIENT SERVICE] USE_MOCK_DATA:', USE_MOCK_DATA);
+  
+  try {
+    const response = await apiClient.get<BackendClient[]>(API_BASE_URL);
+    console.log('✅ [CLIENT SERVICE] Respuesta exitosa:', response.status);
+    console.log('📊 [CLIENT SERVICE] Headers de respuesta:', response.headers);
+    console.log('📊 [CLIENT SERVICE] Datos recibidos del backend:', response.data);
+    console.log('🔢 [CLIENT SERVICE] Tipo de respuesta:', typeof response.data);
+    console.log('🔢 [CLIENT SERVICE] Es array?:', Array.isArray(response.data));
+    if (Array.isArray(response.data)) {
+      console.log('🔢 [CLIENT SERVICE] Cantidad de clientes:', response.data.length);
+    }
+    
+    // Transformar los datos del backend al formato del frontend
+    const transformedData = response.data.map(transformBackendClient);
+    console.log('🔄 [CLIENT SERVICE] Datos transformados:', transformedData);
+    
+    return transformedData;
+  } catch (error: any) {
+    console.error('❌ [CLIENT SERVICE] Error en getAllClients:');
+    console.error('❌ [CLIENT SERVICE] Error completo:', error);
+    console.error('❌ [CLIENT SERVICE] Error message:', error.message);
+    console.error('❌ [CLIENT SERVICE] Error code:', error.code);
+    if (error.response) {
+      console.error('❌ [CLIENT SERVICE] Error response status:', error.response.status);
+      console.error('❌ [CLIENT SERVICE] Error response data:', error.response.data);
+      console.error('❌ [CLIENT SERVICE] Error response headers:', error.response.headers);
+    } else if (error.request) {
+      console.error('❌ [CLIENT SERVICE] Error request:', error.request);
+    }
+    throw error;
+  }
 };
 
-export const getClientById = async (id: number): Promise<Client> => {
+export const getClientById = async (code: number): Promise<Client> => {
   if (USE_MOCK_DATA) {
     await new Promise(resolve => setTimeout(resolve, 300));
-    const client = mockClients.find(c => c.id === id);
+    const client = mockClients.find(c => c.id === code);
     if (!client) {
       throw new Error('Cliente no encontrado');
     }
     return client;
   }
   
-  const response = await apiClient.get(`${API_BASE_URL}/${id}`);
-  return response.data;
+  console.log('🔍 [CLIENT SERVICE] Obteniendo cliente por code:', code);
+  console.log('🌐 [CLIENT SERVICE] URL:', `${API_BASE_URL}/${code}`);
+  
+  try {
+    const response = await apiClient.get<BackendClient>(`${API_BASE_URL}/${code}`);
+    console.log('✅ [CLIENT SERVICE] Cliente encontrado:', response.data);
+    
+    // Transformar los datos del backend al formato del frontend
+    const transformedClient = transformBackendClient(response.data);
+    console.log('🔄 [CLIENT SERVICE] Cliente transformado:', transformedClient);
+    
+    return transformedClient;
+  } catch (error: any) {
+    console.error('❌ [CLIENT SERVICE] Error obteniendo cliente:', error);
+    if (error.response?.status === 404) {
+      throw new Error('Cliente no encontrado');
+    }
+    throw error;
+  }
 };
 
 export const createClient = async (client: Omit<Client, 'id' | 'fechaRegistro' | 'ultimaActualizacion'>): Promise<Client> => {
@@ -116,10 +276,10 @@ export const createClient = async (client: Omit<Client, 'id' | 'fechaRegistro' |
   return response.data;
 };
 
-export const updateClient = async (id: number, client: Partial<Client>): Promise<Client> => {
+export const updateClient = async (code: number, client: Partial<Client>): Promise<Client> => {
   if (USE_MOCK_DATA) {
     await new Promise(resolve => setTimeout(resolve, 500));
-    const index = mockClients.findIndex(c => c.id === id);
+    const index = mockClients.findIndex(c => c.id === code);
     if (index === -1) {
       throw new Error('Cliente no encontrado');
     }
@@ -132,8 +292,30 @@ export const updateClient = async (id: number, client: Partial<Client>): Promise
     return updatedClient;
   }
   
-  const response = await apiClient.put(`${API_BASE_URL}/${id}`, client);
-  return response.data;
+  console.log('🔄 [CLIENT SERVICE] Actualizando cliente code:', code);
+  console.log('📊 [CLIENT SERVICE] Datos frontend:', client);
+  
+  try {
+    // Transformar datos del frontend al formato del backend
+    const backendData = transformToBackendClient(client);
+    console.log('🔄 [CLIENT SERVICE] Datos transformados para backend:', backendData);
+    
+    // Usar PATCH en lugar de PUT y el endpoint correcto /update
+    const response = await apiClient.patch<BackendClient>(`${API_BASE_URL}/${code}/update`, backendData);
+    console.log('✅ [CLIENT SERVICE] Cliente actualizado exitosamente:', response.data);
+    
+    // Transformar la respuesta del backend al formato del frontend
+    const transformedResponse = transformBackendClient(response.data);
+    console.log('🔄 [CLIENT SERVICE] Respuesta transformada:', transformedResponse);
+    
+    return transformedResponse;
+  } catch (error: any) {
+    console.error('❌ [CLIENT SERVICE] Error actualizando cliente:', error);
+    if (error.response?.status === 404) {
+      throw new Error('Cliente no encontrado');
+    }
+    throw error;
+  }
 };
 
 export const deleteClient = async (id: number): Promise<void> => {

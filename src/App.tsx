@@ -38,6 +38,9 @@ import ListAllMechanics from './components/mechanic/ListAllMechanics';
 import CreateMechanic from './components/mechanic/CreateMechanic';
 import UpdateMechanic from './components/mechanic/UpdateMechanic';
 
+// Test Components
+import ApiTest from './components/test/ApiTest';
+
 // Error Components
 import { NotFoundPage } from './components/error/Not-Found-404';
 
@@ -86,6 +89,9 @@ function App() {
         <Route path="/mechanics/list" element={<ListAllMechanics />} />
         <Route path="/mechanics/create" element={<CreateMechanic />} />
         <Route path="/mechanics/:employeeCode/edit" element={<UpdateMechanic />} />
+        
+        {/* Test Routes */}
+        <Route path="/test-api" element={<ApiTest />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

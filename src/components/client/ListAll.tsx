@@ -63,14 +63,23 @@ export default function ListAll() {
   useEffect(() => {
     const fetchClients = async () => {
       try {
+        console.log('📋 [CLIENT LIST] Iniciando carga de clientes...');
         setLoading(true);
         const data = await getAllClients();
+        console.log('📋 [CLIENT LIST] Datos recibidos:', data);
+        console.log('📋 [CLIENT LIST] Tipo de datos:', typeof data);
+        console.log('📋 [CLIENT LIST] Es array?:', Array.isArray(data));
+        if (Array.isArray(data) && data.length > 0) {
+          console.log('📋 [CLIENT LIST] Primer cliente completo:', data[0]);
+          console.log('📋 [CLIENT LIST] Code del primer cliente:', data[0].code);
+          console.log('📋 [CLIENT LIST] ID del primer cliente:', data[0].id);
+        }
         setClients(data);
         setFilteredClients(data);
         setError(null);
       } catch (err) {
+        console.error('❌ [CLIENT LIST] Error al cargar clientes:', err);
         setError('Failed to fetch clients.');
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -334,7 +343,12 @@ export default function ListAll() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => navigate(`/clients/update/${client.id}`)}
+                                  onClick={() => {
+                                    console.log('🔗 [CLIENT LIST] Navegando a editar cliente:', client);
+                                    console.log('🔗 [CLIENT LIST] Client.code:', client.code);
+                                    console.log('🔗 [CLIENT LIST] Client.id:', client.id);
+                                    navigate(`/clients/update/${client.code}`)
+                                  }}
                                   className="flex-1 hover:bg-blue-50 dark:hover:bg-blue-950"
                                 >
                                   <Edit className="h-4 w-4 mr-2" />
@@ -446,7 +460,12 @@ export default function ListAll() {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate(`/clients/update/${client.id}`)}
+                                    onClick={() => {
+                                      console.log('🔗 [CLIENT LIST] Navegando a editar cliente (tabla):', client);
+                                      console.log('🔗 [CLIENT LIST] Client.code:', client.code);
+                                      console.log('🔗 [CLIENT LIST] Client.id:', client.id);
+                                      navigate(`/clients/update/${client.code}`)
+                                    }}
                                     className="hover:bg-blue-50 dark:hover:bg-blue-950"
                                   >
                                     <Edit className="h-4 w-4" />
