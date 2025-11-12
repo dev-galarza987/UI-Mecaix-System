@@ -14,7 +14,8 @@ import {
   Filter, 
   Grid, 
   List, 
-  Edit, 
+  Edit,
+  Pencil,
   Trash2, 
   Eye,
   Calendar,
@@ -97,12 +98,25 @@ export default function ReservateListAll() {
 
   const fetchReservates = async () => {
     try {
+      console.log('🚀 [LIST ALL] Iniciando fetchReservates...');
       setLoading(true);
       const data = await reservateService.getAllReservates();
-      setReservates(data);
+      console.log('✅ [LIST ALL] Datos recibidos:', data);
+      console.log('✅ [LIST ALL] Tipo de datos:', typeof data);
+      console.log('✅ [LIST ALL] Es array:', Array.isArray(data));
+      console.log('✅ [LIST ALL] Longitud:', data?.length);
+      
+      if (data && Array.isArray(data) && data.length > 0) {
+        console.log('✅ [LIST ALL] Primera reserva:', data[0]);
+        setReservates(data);
+      } else {
+        console.warn('⚠️ [LIST ALL] Datos vacíos o inválidos:', data);
+        setReservates([]);
+      }
     } catch (error) {
-      console.error('Error fetching reservates:', error);
+      console.error('❌ [LIST ALL] Error fetching reservates:', error);
       toast.error('Error al cargar las reservaciones');
+      setReservates([]);
     } finally {
       setLoading(false);
     }
@@ -110,7 +124,7 @@ export default function ReservateListAll() {
 
   const handleDelete = async (reservate: Reservate) => {
     try {
-      await reservateService.deleteReservate(reservate.codeReservate);
+      await reservateService.deleteReservate(reservate.code);
       toast.success('Reservación eliminada exitosamente');
       fetchReservates();
     } catch (error) {
@@ -134,7 +148,7 @@ export default function ReservateListAll() {
       const matchesSearch = 
         reservate.client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reservate.client?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reservate.codeReservate?.toString().includes(searchTerm) ||
+        reservate.code?.toString().includes(searchTerm) ||
         reservate.services?.some((service: any) => 
           service.title?.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -149,7 +163,7 @@ export default function ReservateListAll() {
 
       switch (sortField) {
         case 'code':
-          comparison = (a.codeReservate || 0) - (b.codeReservate || 0);
+          comparison = parseInt(a.code || '0') - parseInt(b.code || '0');
           break;
         case 'date':
           comparison = new Date(a.reservationDate).getTime() - new Date(b.reservationDate).getTime();
@@ -310,7 +324,114 @@ export default function ReservateListAll() {
               </CardContent>
             </Card>
           ) : (
-            <p>Lista de reservaciones aquí</p>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <Card className="bg-white/70 backdrop-blur-xl border-emerald-200/50 shadow-lg">
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-emerald-50/50 border-b border-emerald-200">
+                        <tr>
+                          <th className="text-left p-4 font-semibold text-emerald-700">Código</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700">Cliente</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700">Fecha</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700">Estado</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700">Total</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredAndSortedReservates.map((reservate, index) => (
+                          <motion.tr
+                            key={reservate.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                            className="border-b border-emerald-100 hover:bg-emerald-50/30 transition-colors"
+                          >
+                            <td className="p-4">
+                              <span className="font-mono text-sm font-medium">
+                                {reservate.code}
+                              </span>
+                            </td>
+                            <td className="p-4">
+                              <div>
+                                <p className="font-medium">
+                                  {reservate.client?.name} {reservate.client?.lastname}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {reservate.client?.email}
+                                </p>
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <div>
+                                <p className="font-medium">
+                                  {new Date(reservate.reservationDate).toLocaleDateString('es-ES', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(reservate.reservationDate).toLocaleTimeString('es-ES', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                reservate.state === 'completed' ? 'bg-green-100 text-green-800' :
+                                reservate.state === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                                reservate.state === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                reservate.state === 'confirmed' ? 'bg-indigo-100 text-indigo-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                {reservate.state === 'completed' ? 'Completada' :
+                                 reservate.state === 'in_progress' ? 'En Progreso' :
+                                 reservate.state === 'pending' ? 'Pendiente' :
+                                 reservate.state === 'confirmed' ? 'Confirmada' :
+                                 'Cancelada'}
+                              </span>
+                            </td>
+                            <td className="p-4">
+                              <span className="font-semibold text-emerald-700">
+                                ${reservate.totalPrice}
+                              </span>
+                            </td>
+                            <td className="p-4">
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate(`/reservates/update/${reservate.code}`)}
+                                  className="h-8 w-8 p-0 border-emerald-200 hover:bg-emerald-50"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setDeleteDialog({ open: true, reservate })}
+                                  className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 text-red-600"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
         </div>
       </div>
@@ -321,7 +442,7 @@ export default function ReservateListAll() {
           <DialogHeader>
             <DialogTitle>Confirmar eliminación</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro de que quieres eliminar la reservación #{deleteDialog.reservate?.codeReservate}?
+              ¿Estás seguro de que quieres eliminar la reservación #{deleteDialog.reservate?.code}?
               Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>

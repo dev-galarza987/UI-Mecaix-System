@@ -31,10 +31,20 @@ export function ReservatePage() {
 
   useEffect(() => {
     const fetchStats = async () => {
+      console.log('🏁 [RESERVATE PAGE] Iniciando fetchStats...');
       try {
         const reservates = await reservateService.getAllReservates();
+        console.log('✅ [RESERVATE PAGE] Reservas obtenidas:', reservates);
+        console.log('✅ [RESERVATE PAGE] Número de reservas:', reservates?.length);
+        console.log('✅ [RESERVATE PAGE] Primera reserva:', reservates?.[0]);
+        
+        if (!reservates || !Array.isArray(reservates)) {
+          console.error('❌ [RESERVATE PAGE] Las reservas no son un array válido:', reservates);
+          return;
+        }
         
         const stats = reservates.reduce((acc, reservate) => {
+          console.log('🔍 [RESERVATE PAGE] Procesando reserva:', { id: reservate.id, code: reservate.code, state: reservate.state, price: reservate.totalPrice });
           acc.total += 1;
           acc.totalRevenue += reservate.totalPrice || 0;
           
@@ -54,6 +64,9 @@ export function ReservatePage() {
             case 'cancelled':
               acc.cancelled += 1;
               break;
+            default:
+              console.warn('⚠️ [RESERVATE PAGE] Estado desconocido:', reservate.state);
+              break;
           }
           
           return acc;
@@ -67,9 +80,10 @@ export function ReservatePage() {
           totalRevenue: 0,
         });
 
+        console.log('📊 [RESERVATE PAGE] Stats calculadas:', stats);
         setStats(stats);
       } catch (error) {
-        console.error('Error fetching reservates:', error);
+        console.error('❌ [RESERVATE PAGE] Error fetching reservates:', error);
       } finally {
         setIsLoading(false);
       }

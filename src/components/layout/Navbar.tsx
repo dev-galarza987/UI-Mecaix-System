@@ -21,11 +21,11 @@ export function Navbar() {
       <NavigationMenuList>
         {modules.map((module) => (
           <NavigationMenuItem key={module.name}>
-            <Link to={module.path}>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            <NavigationMenuLink asChild>
+              <Link to={module.path} className={navigationMenuTriggerStyle()}>
                 {module.name}
-              </NavigationMenuLink>
-            </Link>
+              </Link>
+            </NavigationMenuLink>
           </NavigationMenuItem>
         ))}
       </NavigationMenuList>

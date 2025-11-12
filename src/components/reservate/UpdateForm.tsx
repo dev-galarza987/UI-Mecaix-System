@@ -37,7 +37,7 @@ import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
 
 const formSchema = z.object({
-  code: z.coerce.number().int().positive(),
+  code: z.string().min(1, "Code is required"),
   reservationDate: z.date(),
   state: z.string().min(1, "El estado es requerido"),
   clientId: z.number(),
@@ -74,7 +74,7 @@ export default function ReservateUpdateForm() {
 
         if (reservateData && reservateData.client && reservateData.services) {
           form.reset({
-            code: reservateData.codeReservate,
+            code: reservateData.code,
             reservationDate: new Date(reservateData.reservationDate),
             state: reservateData.state,
             clientId: reservateData.client.id,
@@ -110,7 +110,7 @@ export default function ReservateUpdateForm() {
       }
 
       const reservateData: Partial<ReservateData> = {
-        codeReservate: values.code,
+        code: values.code,
         reservationDate: values.reservationDate.toISOString(),
         state: values.state as "pending" | "confirmed" | "in_progress" | "completed" | "cancelled",
         clientId: values.clientId,

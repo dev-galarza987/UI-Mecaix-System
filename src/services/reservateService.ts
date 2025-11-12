@@ -29,12 +29,12 @@ export interface Mechanic {
 
 export interface Reservate {
   id: number;
-  codeReservate: number;
+  code: string;
   reservationDate: string;
   totalPrice: number;
   state: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
-  clientId: number;
-  mechanicId: number;
+  clientId?: number;
+  mechanicId?: number;
   createdAt?: string;
   updatedAt?: string;
   client?: Client;
@@ -44,7 +44,7 @@ export interface Reservate {
 
 // Type for creation
 export interface ReservateData {
-  codeReservate: number;
+  code?: string;
   reservationDate: string;
   totalPrice: number;
   state: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
@@ -55,8 +55,19 @@ export interface ReservateData {
 
 export const reservateService = {
   getAllReservates: async (): Promise<Reservate[]> => {
-    const response = await apiClient.get(API_BASE_URL);
-    return response.data;
+    console.log('🚀 [RESERVATE SERVICE] Iniciando getAllReservates...');
+    console.log('🌐 [RESERVATE SERVICE] URL completa:', `http://localhost:4000/api/v1${API_BASE_URL}`);
+    
+    try {
+      const response = await apiClient.get(API_BASE_URL);
+      console.log('✅ [RESERVATE SERVICE] Respuesta exitosa:', response.status);
+      console.log('📊 [RESERVATE SERVICE] Datos recibidos:', response.data);
+      console.log('🔢 [RESERVATE SERVICE] Cantidad de reservas:', response.data.length);
+      return response.data;
+    } catch (error) {
+      console.error('❌ [RESERVATE SERVICE] Error en getAllReservates:', error);
+      throw error;
+    }
   },
 
   getReservateByCode: async (code: number): Promise<Reservate> => {
@@ -74,7 +85,7 @@ export const reservateService = {
     return response.data;
   },
 
-  deleteReservate: async (code: number): Promise<void> => {
+  deleteReservate: async (code: string): Promise<void> => {
     await apiClient.delete(`${API_BASE_URL}/${code}/delete`);
   },
 };
