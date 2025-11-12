@@ -87,8 +87,25 @@ export const reservateService = {
   },
 
   updateReservate: async (code: string, reservateData: Partial<ReservateData>): Promise<Reservate> => {
-    const response = await apiClient.patch(`${API_BASE_URL}/${code}/update`, reservateData);
-    return response.data;
+    console.log('🔄 [RESERVATE SERVICE] updateReservate INICIADO');
+    console.log('🔑 [RESERVATE SERVICE] Código de reserva:', code);
+    console.log('📝 [RESERVATE SERVICE] Datos a actualizar:', reservateData);
+    console.log('🌐 [RESERVATE SERVICE] URL completa:', `http://localhost:4000/api/v1${API_BASE_URL}/${code}/update`);
+    
+    try {
+      const response = await apiClient.patch(`${API_BASE_URL}/${code}/update`, reservateData);
+      console.log('✅ [RESERVATE SERVICE] Actualización exitosa:', response.status);
+      console.log('📊 [RESERVATE SERVICE] Respuesta del servidor:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ [RESERVATE SERVICE] Error en updateReservate:', error);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: unknown; status?: number } };
+        console.error('❌ [RESERVATE SERVICE] Error response:', axiosError.response?.data);
+        console.error('❌ [RESERVATE SERVICE] Error status:', axiosError.response?.status);
+      }
+      throw error;
+    }
   },
 
   deleteReservate: async (code: string): Promise<void> => {

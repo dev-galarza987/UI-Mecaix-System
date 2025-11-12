@@ -191,7 +191,7 @@ export default function ReservateListAll() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-100"
+      className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-slate-800"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -199,9 +199,9 @@ export default function ReservateListAll() {
       <div className="relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
-          <div className="absolute top-32 right-10 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float-delayed"></div>
-          <div className="absolute bottom-10 left-1/2 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
+          <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-300/20 dark:bg-emerald-400/10 rounded-full mix-blend-multiply filter blur-xl"></div>
+          <div className="absolute top-32 right-10 w-96 h-96 bg-teal-300/20 dark:bg-teal-400/10 rounded-full mix-blend-multiply filter blur-xl"></div>
+          <div className="absolute bottom-10 left-1/2 w-80 h-80 bg-green-300/20 dark:bg-green-400/10 rounded-full mix-blend-multiply filter blur-xl"></div>
         </div>
 
         <div className="relative container mx-auto p-6">
@@ -245,7 +245,7 @@ export default function ReservateListAll() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <Card className="mb-6 bg-white/70 backdrop-blur-xl border-emerald-200/50 shadow-lg">
+            <Card className="mb-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-0 shadow-xl">
               <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
                   <div className="flex flex-1 items-center space-x-4">
@@ -307,7 +307,7 @@ export default function ReservateListAll() {
               <span className="ml-2 text-emerald-600">Cargando reservaciones...</span>
             </div>
           ) : filteredAndSortedReservates.length === 0 ? (
-            <Card className="text-center py-12 bg-white/70 backdrop-blur-xl border-emerald-200/50">
+            <Card className="text-center py-12 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-0 shadow-xl">
               <CardContent>
                 <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-600 mb-2">No se encontraron reservaciones</h3>
@@ -331,18 +331,18 @@ export default function ReservateListAll() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <Card className="bg-white/70 backdrop-blur-xl border-emerald-200/50 shadow-lg">
+              <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-0 shadow-xl">
                 <CardContent className="p-0">
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-emerald-50/50 border-b border-emerald-200">
+                      <thead className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-700 dark:to-slate-600 border-b border-emerald-200/50 dark:border-slate-600">
                         <tr>
-                          <th className="text-left p-4 font-semibold text-emerald-700">Código</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700">Cliente</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700">Fecha</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700">Estado</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700">Total</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700">Acciones</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Código</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Cliente</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Fecha</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Estado</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Total</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Acciones</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -352,7 +352,7 @@ export default function ReservateListAll() {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.3, delay: index * 0.1 }}
-                            className="border-b border-emerald-100 hover:bg-emerald-50/30 transition-colors"
+                            className="border-b border-emerald-100/50 dark:border-slate-600 hover:bg-emerald-50/30 dark:hover:bg-slate-700/50 transition-colors"
                           >
                             <td className="p-4">
                               <span className="font-mono text-sm font-medium">

@@ -73,7 +73,7 @@ export default function ReservateUpdateForm() {
       try {
         const [clientsData, servicesData, reservateData] = await Promise.all([
           getAllClients(),
-          serviceService.getServices(),
+          serviceService.getAllServices(),
           reservateService.getReservate(code)
         ]);
         
@@ -92,9 +92,9 @@ export default function ReservateUpdateForm() {
             reservationDate: new Date(reservateData.reservationDate),
             state: reservateData.state,
             clientId: reservateData.client.id,
-            serviceIds: reservateData.services.map(s => s.id),
+            serviceIds: reservateData.services.map((s: Service) => s.id),
             totalPrice: reservateData.totalPrice.toString(),
-            notes: reservateData.notes || '',
+            notes: '',
           });
           setSelectedServices(reservateData.services);
         }
@@ -114,11 +114,21 @@ export default function ReservateUpdateForm() {
   }, [selectedServices, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log('🔥 [UPDATE FORM] onSubmit INICIADO!');
+    console.log('📝 [UPDATE FORM] Valores del formulario:', values);
+    console.log('🔑 [UPDATE FORM] Código de reserva (URL param):', code);
+    console.log('👥 [UPDATE FORM] Clientes disponibles:', clients.length);
+    console.log('🛠️ [UPDATE FORM] Servicios seleccionados:', selectedServices);
+
     try {
       setLoading(true);
+      console.log('⏳ [UPDATE FORM] Estado de loading activado');
       
       const client = clients.find(c => c.id === values.clientId);
+      console.log('🔍 [UPDATE FORM] Cliente encontrado:', client);
+      
       if (!client) {
+        console.error('❌ [UPDATE FORM] Cliente no encontrado para ID:', values.clientId);
         toast.error('Cliente no encontrado');
         return;
       }
@@ -130,23 +140,30 @@ export default function ReservateUpdateForm() {
         clientId: values.clientId,
         serviceIds: values.serviceIds,
         totalPrice: parseFloat(values.totalPrice || '0'),
-        notes: values.notes || '',
       };
 
-      await reservateService.updateReservate(reservateCode, reservateData);
+      console.log('📦 [UPDATE FORM] Datos preparados para enviar:', reservateData);
+      console.log('🌐 [UPDATE FORM] Llamando a reservateService.updateReservate...');
+      
+      const result = await reservateService.updateReservate(code!, reservateData);
+      console.log('✅ [UPDATE FORM] Respuesta del servidor:', result);
+      
       toast.success('Reservación actualizada exitosamente');
       navigate('/reservates/list');
     } catch (error) {
-      console.error('Failed to update reservation', error);
-      toast.error('Error al actualizar la reserva');
+      console.error('❌ [UPDATE FORM] Error completo:', error);
+      console.error('❌ [UPDATE FORM] Error message:', error instanceof Error ? error.message : 'Unknown error');
+      console.error('❌ [UPDATE FORM] Error stack:', error instanceof Error ? error.stack : 'No stack');
+      toast.error('Error al actualizar la reserva: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     } finally {
       setLoading(false);
+      console.log('✅ [UPDATE FORM] Estado de loading desactivado');
     }
   }
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-100"
+      className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-slate-800"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -154,9 +171,9 @@ export default function ReservateUpdateForm() {
       <div className="relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
-          <div className="absolute top-32 right-10 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float-delayed"></div>
-          <div className="absolute bottom-10 left-1/2 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
+          <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-300/20 dark:bg-emerald-400/10 rounded-full mix-blend-multiply filter blur-xl"></div>
+          <div className="absolute top-32 right-10 w-96 h-96 bg-teal-300/20 dark:bg-teal-400/10 rounded-full mix-blend-multiply filter blur-xl"></div>
+          <div className="absolute bottom-10 left-1/2 w-80 h-80 bg-green-300/20 dark:bg-green-400/10 rounded-full mix-blend-multiply filter blur-xl"></div>
         </div>
 
         <div className="relative container mx-auto p-6 max-w-4xl">
@@ -170,16 +187,16 @@ export default function ReservateUpdateForm() {
             <Button 
               variant="outline" 
               onClick={() => navigate('/reservates/list')} 
-              className="mb-6 bg-white/70 backdrop-blur-sm border-emerald-200/50 hover:bg-emerald-50/70 transition-all duration-300"
+              className="mb-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-0 shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver a la lista
             </Button>
             
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-700 via-green-700 to-teal-700 bg-clip-text text-transparent mb-2">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-green-700 dark:from-emerald-400 dark:via-teal-400 dark:to-green-300 bg-clip-text text-transparent mb-2">
               Editar Reservación
             </h1>
-            <p className="text-emerald-600/80 text-lg">
+            <p className="text-xl text-slate-600 dark:text-slate-400">
               Modifique los datos de la reservación
             </p>
           </motion.div>
@@ -190,10 +207,10 @@ export default function ReservateUpdateForm() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Card className="bg-white/70 backdrop-blur-xl border-emerald-200/50 shadow-xl">
+            <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-0 shadow-xl">
               <CardHeader>
-                <CardTitle className="text-emerald-700 flex items-center">
-                  <AlertCircle className="h-5 w-5 mr-2" />
+                <CardTitle className="text-emerald-700 dark:text-emerald-300 flex items-center text-xl">
+                  <AlertCircle className="h-6 w-6 mr-2" />
                   Modificar Información de la Reserva
                 </CardTitle>
               </CardHeader>
@@ -205,13 +222,13 @@ export default function ReservateUpdateForm() {
                       name="code"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-emerald-600">Código</FormLabel>
+                          <FormLabel className="text-slate-700 dark:text-slate-300 font-medium">Código</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
                               placeholder="1001" 
                               disabled 
-                              className="border-emerald-200 bg-gray-50" 
+                              className="bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600" 
                               {...field} 
                             />
                           </FormControl>
@@ -225,14 +242,14 @@ export default function ReservateUpdateForm() {
                       name="reservationDate"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel className="text-emerald-600">Fecha de reservación</FormLabel>
+                          <FormLabel className="text-slate-700 dark:text-slate-300 font-medium">Fecha de reservación</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
                                   variant={"outline"}
                                   className={cn(
-                                    "w-full justify-start text-left font-normal border-emerald-200",
+                                    "w-full justify-start text-left font-normal border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700",
                                     !field.value && "text-muted-foreground"
                                   )}
                                 >
@@ -267,10 +284,10 @@ export default function ReservateUpdateForm() {
                       name="state"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-emerald-600">Estado</FormLabel>
+                          <FormLabel className="text-slate-700 dark:text-slate-300 font-medium">Estado</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger className="border-emerald-200 focus:border-emerald-400">
+                              <SelectTrigger className="border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700">
                                 <SelectValue placeholder="Seleccionar un estado" />
                               </SelectTrigger>
                             </FormControl>
@@ -292,10 +309,10 @@ export default function ReservateUpdateForm() {
                       name="clientId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-emerald-600">Cliente</FormLabel>
+                          <FormLabel className="text-slate-700 dark:text-slate-300 font-medium">Cliente</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                             <FormControl>
-                              <SelectTrigger className="border-emerald-200 focus:border-emerald-400">
+                              <SelectTrigger className="border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700">
                                 <SelectValue placeholder="Seleccionar un cliente" />
                               </SelectTrigger>
                             </FormControl>
@@ -317,7 +334,7 @@ export default function ReservateUpdateForm() {
                       name="serviceIds"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-emerald-600">Servicios</FormLabel>
+                          <FormLabel className="text-slate-700 dark:text-slate-300 font-medium">Servicios</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
@@ -325,7 +342,7 @@ export default function ReservateUpdateForm() {
                                   variant="outline"
                                   role="combobox"
                                   className={cn(
-                                    "w-full justify-between border-emerald-200",
+                                    "w-full justify-between border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700",
                                     !field.value?.length && "text-muted-foreground"
                                   )}
                                 >
@@ -377,12 +394,12 @@ export default function ReservateUpdateForm() {
                         name="totalPrice"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-emerald-600">Precio Total</FormLabel>
+                            <FormLabel className="text-slate-700 dark:text-slate-300 font-medium">Precio Total</FormLabel>
                             <FormControl>
                               <Input 
                                 type="number" 
                                 placeholder="0.00" 
-                                className="border-emerald-200 focus:border-emerald-400" 
+                                className="border-gray-200 dark:border-slate-600" 
                                 {...field} 
                               />
                             </FormControl>
@@ -396,11 +413,11 @@ export default function ReservateUpdateForm() {
                         name="notes"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-emerald-600">Notas</FormLabel>
+                            <FormLabel className="text-slate-700 dark:text-slate-300 font-medium">Notas</FormLabel>
                             <FormControl>
                               <Textarea 
                                 placeholder="Notas adicionales..." 
-                                className="border-emerald-200 focus:border-emerald-400" 
+                                className="border-gray-200 dark:border-slate-600" 
                                 {...field} 
                               />
                             </FormControl>
