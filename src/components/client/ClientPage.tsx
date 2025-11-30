@@ -1,65 +1,117 @@
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
-import { 
-  Users, 
-  UserPlus, 
-  Search, 
-  FileText, 
-  TrendingUp, 
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { getClientStats, type ClientStats } from "../../services/clientService";
+import {
+  Users,
+  UserPlus,
+  Search,
+  FileText,
+  TrendingUp,
   ArrowRight,
   Star,
-  Activity
-} from 'lucide-react';
+  Activity,
+  UserCheck,
+  UserX,
+} from "lucide-react";
 
 export function ClientPage() {
   const navigate = useNavigate();
+  const [statsData, setStatsData] = useState<ClientStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getClientStats();
+        setStatsData(data);
+      } catch (error) {
+        console.error("Error loading client stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const stats = [
-    { label: "Total Clientes", value: "248", icon: Users, color: "from-blue-500 to-blue-600" },
-    { label: "Nuevos este mes", value: "32", icon: TrendingUp, color: "from-emerald-500 to-emerald-600" },
-    { label: "Activos", value: "189", icon: Activity, color: "from-purple-500 to-purple-600" },
-    { label: "VIP", value: "12", icon: Star, color: "from-amber-500 to-amber-600" }
+    {
+      label: "Total Clientes",
+      value: loading ? "..." : statsData?.total.toString() || "0",
+      icon: Users,
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      label: "Activos",
+      value: loading ? "..." : statsData?.activos.toString() || "0",
+      icon: UserCheck,
+      color: "from-emerald-500 to-emerald-600",
+    },
+    {
+      label: "Inactivos",
+      value: loading ? "..." : statsData?.inactivos.toString() || "0",
+      icon: UserX,
+      color: "from-red-500 to-red-600",
+    },
+    {
+      label: "Nuevos (Recientes)",
+      value: loading ? "..." : statsData?.clientesRecientes.toString() || "0",
+      icon: Star,
+      color: "from-amber-500 to-amber-600",
+    },
   ];
 
   const actions = [
     {
       title: "Ver Todos los Clientes",
-      description: "Explora, busca y gestiona todos los clientes registrados en el sistema.",
+      description:
+        "Explora, busca y gestiona todos los clientes registrados en el sistema.",
       icon: Users,
       color: "from-blue-500 to-blue-600",
       hoverColor: "hover:from-blue-600 hover:to-blue-700",
-      action: () => navigate('/clients/list'),
-      features: ["Búsqueda avanzada", "Filtros múltiples", "Exportar datos"]
+      action: () => navigate("/clients/list"),
+      features: ["Búsqueda avanzada", "Filtros múltiples", "Exportar datos"],
     },
     {
       title: "Registrar Nuevo Cliente",
-      description: "Añade nuevos clientes con toda su información personal y de contacto.",
+      description:
+        "Añade nuevos clientes con toda su información personal y de contacto.",
       icon: UserPlus,
       color: "from-emerald-500 to-emerald-600",
       hoverColor: "hover:from-emerald-600 hover:to-emerald-700",
-      action: () => navigate('/clients/new'),
-      features: ["Formulario completo", "Validación automática", "Datos seguros"]
+      action: () => navigate("/clients/new"),
+      features: [
+        "Formulario completo",
+        "Validación automática",
+        "Datos seguros",
+      ],
     },
     {
       title: "Búsqueda Rápida",
-      description: "Encuentra clientes específicos usando filtros avanzados y búsqueda inteligente.",
+      description:
+        "Encuentra clientes específicos usando filtros avanzados y búsqueda inteligente.",
       icon: Search,
       color: "from-purple-500 to-purple-600",
       hoverColor: "hover:from-purple-600 hover:to-purple-700",
-      action: () => navigate('/clients/list'),
-      features: ["Búsqueda instantánea", "Filtros inteligentes", "Resultados precisos"]
+      action: () => navigate("/clients/list"),
+      features: [
+        "Búsqueda instantánea",
+        "Filtros inteligentes",
+        "Resultados precisos",
+      ],
     },
     {
       title: "Reportes y Análisis",
-      description: "Genera reportes detallados y análisis sobre la base de clientes.",
+      description:
+        "Genera reportes detallados y análisis sobre la base de clientes.",
       icon: FileText,
       color: "from-orange-500 to-orange-600",
       hoverColor: "hover:from-orange-600 hover:to-orange-700",
-      action: () => navigate('/clients/list'),
-      features: ["Reportes PDF", "Gráficos interactivos", "Exportar Excel"]
-    }
+      action: () => navigate("/clients/list"),
+      features: ["Reportes PDF", "Gráficos interactivos", "Exportar Excel"],
+    },
   ];
 
   return (
@@ -75,7 +127,7 @@ export function ClientPage() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
         <motion.div
@@ -87,7 +139,7 @@ export function ClientPage() {
           transition={{
             duration: 25,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
       </div>
@@ -104,7 +156,8 @@ export function ClientPage() {
             Gestión de Clientes
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Administra eficientemente toda tu base de clientes con herramientas modernas y potentes
+            Administra eficientemente toda tu base de clientes con herramientas
+            modernas y potentes
           </p>
         </motion.div>
 
@@ -127,12 +180,18 @@ export function ClientPage() {
               <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg hover:shadow-2xl transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
-                    <div className={`w-14 h-14 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center shadow-lg`}>
+                    <div
+                      className={`w-14 h-14 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center shadow-lg`}
+                    >
                       <stat.icon className="h-7 w-7 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-600 dark:text-slate-400">{stat.label}</p>
-                      <p className="text-3xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
+                      <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                        {stat.label}
+                      </p>
+                      <p className="text-3xl font-bold text-slate-900 dark:text-white">
+                        {stat.value}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -158,7 +217,9 @@ export function ClientPage() {
               transition={{ delay: 0.2 * index, duration: 0.6 }}
             >
               <Card className="h-full border-0 shadow-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg hover:shadow-3xl transition-all duration-500 group overflow-hidden">
-                <div className={`absolute inset-0 bg-gradient-to-r ${action.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${action.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                />
                 <CardHeader className="relative">
                   <div className="flex items-center space-x-4">
                     <motion.div
@@ -179,7 +240,7 @@ export function ClientPage() {
                   <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
                     {action.description}
                   </p>
-                  
+
                   {/* Features List */}
                   <div className="space-y-2">
                     {action.features.map((feature, idx) => (
@@ -188,10 +249,14 @@ export function ClientPage() {
                         className="flex items-center space-x-2"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + (idx * 0.1) }}
+                        transition={{ delay: 0.3 + idx * 0.1 }}
                       >
-                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${action.color}`} />
-                        <span className="text-sm text-slate-600 dark:text-slate-400">{feature}</span>
+                        <div
+                          className={`w-2 h-2 rounded-full bg-gradient-to-r ${action.color}`}
+                        />
+                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                          {feature}
+                        </span>
                       </motion.div>
                     ))}
                   </div>
@@ -231,7 +296,10 @@ export function ClientPage() {
                   💡 Consejos Rápidos
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-600 dark:text-slate-400">
-                  <div>• Usa filtros para encontrar clientes específicos rápidamente</div>
+                  <div>
+                    • Usa filtros para encontrar clientes específicos
+                    rápidamente
+                  </div>
                   <div>• Mantén actualizada la información de contacto</div>
                   <div>• Revisa regularmente los reportes de actividad</div>
                 </div>

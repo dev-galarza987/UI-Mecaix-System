@@ -1,97 +1,134 @@
-﻿import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { createClient, type Client } from '../../services/clientService';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  UserPlus, 
-  User, 
-  Phone, 
-  Hash, 
+﻿import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { createClient, type Client } from "../../services/clientService";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  UserPlus,
+  User,
+  Phone,
+  Hash,
   ArrowLeft,
   CheckCircle,
   AlertTriangle,
-  Save
-} from 'lucide-react';
+  Save,
+  Mail,
+  Lock,
+  MapPin,
+  CreditCard,
+} from "lucide-react";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    code: '',
-    name: '',
-    lastname: '',
-    phone: ''
+    code: "",
+    name: "",
+    lastname: "",
+    phone: "",
+    ci: "",
+    email: "",
+    password: "",
+    address: "",
+    gender: "masculino",
+    preferredContactMethod: "telefono",
   });
+
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
-    
-    if (!formData.name.trim()) newErrors.name = 'El nombre es requerido';
-    if (!formData.lastname.trim()) newErrors.lastname = 'El apellido es requerido';
-    if (!formData.phone.trim()) newErrors.phone = 'El teléfono es requerido';
-    if (!formData.code.trim()) newErrors.code = 'El código es requerido';
-    
-    if (formData.phone && !/^\d{8,15}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Teléfono debe tener entre 8 y 15 dígitos';
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.code.trim()) newErrors.code = "El código es requerido";
+    if (!formData.name.trim()) newErrors.name = "El nombre es requerido";
+    if (!formData.lastname.trim())
+      newErrors.lastname = "El apellido es requerido";
+    if (!formData.phone.trim()) newErrors.phone = "El teléfono es requerido";
+    if (!formData.ci.trim()) newErrors.ci = "El CI es requerido";
+    if (!formData.email.trim()) newErrors.email = "El email es requerido";
+    if (!formData.password.trim())
+      newErrors.password = "La contraseña es requerida";
+    if (!formData.address.trim())
+      newErrors.address = "La dirección es requerida";
+
+    if (
+      formData.phone &&
+      !/^\d{8,15}$/.test(formData.phone.replace(/\D/g, ""))
+    ) {
+      newErrors.phone = "Teléfono debe tener entre 8 y 15 dígitos";
     }
-    
+
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Email inválido";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
       const clientData: Client = {
+        code: Number(formData.code),
         nombre: formData.name,
         apellido: formData.lastname,
         telefono: formData.phone,
-        email: '',
-        genero: 'otro',
-        fechaNacimiento: '',
-        tipoDocumento: '',
-        numeroDocumento: formData.code,
-        direccion: '',
-        ciudad: '',
-        codigoPostal: '',
-        profesion: '',
-        estado: 'activo',
-        metodoPrefContacto: 'telefono',
-        frecuenciaContacto: 'media'
+        ci: formData.ci,
+        email: formData.email,
+        password: formData.password,
+        direccion: formData.address,
+        genero: formData.gender as "masculino" | "femenino" | "otro",
+        metodoPrefContacto: formData.preferredContactMethod as
+          | "telefono"
+          | "email"
+          | "ambos",
+        estado: "activo",
       };
+
       await createClient(clientData);
-      
-      // Success animation delay
+
       setTimeout(() => {
-        navigate('/clients/list');
+        navigate("/clients/list");
       }, 1000);
     } catch (error) {
-      console.error('Failed to create client', error);
-      setErrors({ submit: 'Error al crear el cliente. Inténtalo nuevamente.' });
+      console.error("Failed to create client", error);
+      setErrors({
+        submit:
+          "Error al crear el cliente. Verifica que el código o email no existan.",
+      });
     } finally {
       setLoading(false);
     }
@@ -99,44 +136,15 @@ export default function RegisterForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/30 to-emerald-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-      {/* Floating background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-4 -right-4 w-96 h-96 bg-green-400/10 rounded-full mix-blend-multiply filter blur-xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 -left-4 w-80 h-80 bg-emerald-400/10 rounded-full mix-blend-multiply filter blur-xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [360, 180, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-      </div>
-
       <div className="relative container mx-auto p-6">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-4 mb-8"
         >
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/clients')}
+          <Button
+            variant="outline"
+            onClick={() => navigate("/clients/list")}
             className="hover:bg-green-50 dark:hover:bg-slate-800"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -147,17 +155,16 @@ export default function RegisterForm() {
               Registrar Nuevo Cliente
             </h1>
             <p className="text-slate-600 dark:text-slate-400 mt-1">
-              Completa la información básica del cliente
+              Completa la información completa del cliente
             </p>
           </div>
         </motion.div>
 
-        {/* Form */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="max-w-2xl mx-auto"
+          className="max-w-4xl mx-auto"
         >
           <Card className="border-0 shadow-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg">
             <CardHeader className="text-center">
@@ -172,18 +179,13 @@ export default function RegisterForm() {
                 Información del Cliente
               </CardTitle>
             </CardHeader>
-            
+
             <CardContent className="space-y-6 p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Code Field */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="space-y-2"
-                  >
-                    <Label htmlFor="code" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  <div className="space-y-2">
+                    <Label htmlFor="code">
                       Código Cliente <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
@@ -191,71 +193,43 @@ export default function RegisterForm() {
                       <Input
                         id="code"
                         name="code"
-                        type="text"
                         value={formData.code}
                         onChange={handleChange}
-                        placeholder="Ej: CLI001"
+                        placeholder="Ej: 1001"
                         required
-                        className={`pl-10 h-12 border-2 ${errors.code ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'} bg-white/50 dark:bg-slate-800/50 focus:border-green-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400`}
+                        className="pl-10"
                       />
                     </div>
                     {errors.code && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-500 text-sm flex items-center gap-1"
-                      >
-                        <AlertTriangle className="h-4 w-4" />
-                        {errors.code}
-                      </motion.p>
+                      <p className="text-red-500 text-sm">{errors.code}</p>
                     )}
-                  </motion.div>
+                  </div>
 
-                  {/* Phone Field */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="space-y-2"
-                  >
-                    <Label htmlFor="phone" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                      Teléfono <span className="text-red-500">*</span>
+                  {/* CI Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="ci">
+                      CI / Documento <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                       <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
+                        id="ci"
+                        name="ci"
+                        value={formData.ci}
                         onChange={handleChange}
-                        placeholder="Ej: +57 300 123 4567"
+                        placeholder="Ej: 12345678"
                         required
-                        className={`pl-10 h-12 border-2 ${errors.phone ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'} bg-white/50 dark:bg-slate-800/50 focus:border-green-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400`}
+                        className="pl-10"
                       />
                     </div>
-                    {errors.phone && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-500 text-sm flex items-center gap-1"
-                      >
-                        <AlertTriangle className="h-4 w-4" />
-                        {errors.phone}
-                      </motion.p>
+                    {errors.ci && (
+                      <p className="text-red-500 text-sm">{errors.ci}</p>
                     )}
-                  </motion.div>
-                </div>
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Name Field */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="space-y-2"
-                  >
-                    <Label htmlFor="name" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">
                       Nombre <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
@@ -263,34 +237,21 @@ export default function RegisterForm() {
                       <Input
                         id="name"
                         name="name"
-                        type="text"
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Ej: Juan"
                         required
-                        className={`pl-10 h-12 border-2 ${errors.name ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'} bg-white/50 dark:bg-slate-800/50 focus:border-green-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400`}
+                        className="pl-10"
                       />
                     </div>
                     {errors.name && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-500 text-sm flex items-center gap-1"
-                      >
-                        <AlertTriangle className="h-4 w-4" />
-                        {errors.name}
-                      </motion.p>
+                      <p className="text-red-500 text-sm">{errors.name}</p>
                     )}
-                  </motion.div>
+                  </div>
 
                   {/* Lastname Field */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="space-y-2"
-                  >
-                    <Label htmlFor="lastname" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  <div className="space-y-2">
+                    <Label htmlFor="lastname">
                       Apellido <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
@@ -298,98 +259,168 @@ export default function RegisterForm() {
                       <Input
                         id="lastname"
                         name="lastname"
-                        type="text"
                         value={formData.lastname}
                         onChange={handleChange}
                         placeholder="Ej: Pérez"
                         required
-                        className={`pl-10 h-12 border-2 ${errors.lastname ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'} bg-white/50 dark:bg-slate-800/50 focus:border-green-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400`}
+                        className="pl-10"
                       />
                     </div>
                     {errors.lastname && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-500 text-sm flex items-center gap-1"
-                      >
-                        <AlertTriangle className="h-4 w-4" />
-                        {errors.lastname}
-                      </motion.p>
+                      <p className="text-red-500 text-sm">{errors.lastname}</p>
                     )}
-                  </motion.div>
+                  </div>
+
+                  {/* Phone Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">
+                      Teléfono <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="Ej: 70123456"
+                        required
+                        className="pl-10"
+                      />
+                    </div>
+                    {errors.phone && (
+                      <p className="text-red-500 text-sm">{errors.phone}</p>
+                    )}
+                  </div>
+
+                  {/* Email Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email">
+                      Email <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Ej: juan@email.com"
+                        required
+                        className="pl-10"
+                      />
+                    </div>
+                    {errors.email && (
+                      <p className="text-red-500 text-sm">{errors.email}</p>
+                    )}
+                  </div>
+
+                  {/* Password Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="password">
+                      Contraseña <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="••••••••"
+                        required
+                        className="pl-10"
+                      />
+                    </div>
+                    {errors.password && (
+                      <p className="text-red-500 text-sm">{errors.password}</p>
+                    )}
+                  </div>
+
+                  {/* Address Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="address">
+                      Dirección <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        placeholder="Ej: Av. Principal 123"
+                        required
+                        className="pl-10"
+                      />
+                    </div>
+                    {errors.address && (
+                      <p className="text-red-500 text-sm">{errors.address}</p>
+                    )}
+                  </div>
+
+                  {/* Gender Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="gender">Género</Label>
+                    <Select
+                      value={formData.gender}
+                      onValueChange={(value) =>
+                        handleSelectChange("gender", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione género" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="masculino">Masculino</SelectItem>
+                        <SelectItem value="femenino">Femenino</SelectItem>
+                        <SelectItem value="otro">Otro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Contact Method Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="preferredContactMethod">
+                      Preferencia de Contacto
+                    </Label>
+                    <Select
+                      value={formData.preferredContactMethod}
+                      onValueChange={(value) =>
+                        handleSelectChange("preferredContactMethod", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione método" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="telefono">Teléfono</SelectItem>
+                        <SelectItem value="email">Email</SelectItem>
+                        <SelectItem value="ambos">Ambos</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* Submit Error */}
                 {errors.submit && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4"
-                  >
-                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                      <AlertTriangle className="h-5 w-5" />
-                      <span>{errors.submit}</span>
-                    </div>
-                  </motion.div>
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-2 text-red-600 dark:text-red-400">
+                    <AlertTriangle className="h-5 w-5" />
+                    <span>{errors.submit}</span>
+                  </div>
                 )}
 
                 {/* Submit Button */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-14 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold text-lg shadow-xl"
                 >
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full h-14 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
-                  >
-                    {loading ? (
-                      <div className="flex items-center gap-2">
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                        />
-                        Guardando...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Save className="h-5 w-5" />
-                        Registrar Cliente
-                      </div>
-                    )}
-                  </Button>
-                </motion.div>
+                  {loading ? "Guardando..." : "Registrar Cliente"}
+                </Button>
               </form>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Tips Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="max-w-2xl mx-auto mt-6"
-        >
-          <Card className="border-0 shadow-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/5 dark:to-emerald-500/5 backdrop-blur-lg">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-slate-900 dark:text-white">
-                    💡 Consejos para el registro
-                  </h3>
-                  <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                    <li>• Usa códigos únicos para identificar fácilmente a tus clientes</li>
-                    <li>• Verifica que el número de teléfono sea correcto para futuras comunicaciones</li>
-                    <li>• Todos los campos marcados con <span className="text-red-500">*</span> son obligatorios</li>
-                  </ul>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </motion.div>
