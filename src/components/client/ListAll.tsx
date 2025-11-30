@@ -1,35 +1,44 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getAllClients, deleteClient, type Client } from '../../services/clientService';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Table, 
-  TableHeader, 
-  TableRow, 
-  TableHead, 
-  TableBody, 
-  TableCell 
-} from '@/components/ui/table';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
-} from '@/components/ui/alert-dialog';
-import { Spinner } from '@/components/ui/spinner';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  getAllClients,
+  deleteClient,
+  type Client,
+} from "../../services/clientService";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Spinner } from "@/components/ui/spinner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { motion, AnimatePresence } from "framer-motion";
+import {
   Users,
-  Search, 
+  Search,
   Filter,
   Edit,
   Trash2,
@@ -44,8 +53,8 @@ import {
   Grid3X3,
   List,
   SortAsc,
-  SortDesc
-} from 'lucide-react';
+  SortDesc,
+} from "lucide-react";
 
 export default function ListAll() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -54,32 +63,37 @@ export default function ListAll() {
   const [error, setError] = useState<string | null>(null);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards');
-  const [sortField, setSortField] = useState<'nombre' | 'apellido' | 'id'>('nombre');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("cards");
+  const [sortField, setSortField] = useState<"nombre" | "apellido" | "code">(
+    "nombre"
+  );
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        console.log('📋 [CLIENT LIST] Iniciando carga de clientes...');
+        console.log("📋 [CLIENT LIST] Iniciando carga de clientes...");
         setLoading(true);
         const data = await getAllClients();
-        console.log('📋 [CLIENT LIST] Datos recibidos:', data);
-        console.log('📋 [CLIENT LIST] Tipo de datos:', typeof data);
-        console.log('📋 [CLIENT LIST] Es array?:', Array.isArray(data));
+        console.log("📋 [CLIENT LIST] Datos recibidos:", data);
+        console.log("📋 [CLIENT LIST] Tipo de datos:", typeof data);
+        console.log("📋 [CLIENT LIST] Es array?:", Array.isArray(data));
         if (Array.isArray(data) && data.length > 0) {
-          console.log('📋 [CLIENT LIST] Primer cliente completo:', data[0]);
-          console.log('📋 [CLIENT LIST] Code del primer cliente:', data[0].code);
-          console.log('📋 [CLIENT LIST] ID del primer cliente:', data[0].id);
+          console.log("📋 [CLIENT LIST] Primer cliente completo:", data[0]);
+          console.log(
+            "📋 [CLIENT LIST] Code del primer cliente:",
+            data[0].code
+          );
+          console.log("📋 [CLIENT LIST] ID del primer cliente:", data[0].id);
         }
         setClients(data);
         setFilteredClients(data);
         setError(null);
       } catch (err) {
-        console.error('❌ [CLIENT LIST] Error al cargar clientes:', err);
-        setError('Failed to fetch clients.');
+        console.error("❌ [CLIENT LIST] Error al cargar clientes:", err);
+        setError("Failed to fetch clients.");
       } finally {
         setLoading(false);
       }
@@ -89,26 +103,27 @@ export default function ListAll() {
 
   // Filter and sort logic
   useEffect(() => {
-    let filtered = clients.filter(client =>
-      client.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.telefono.includes(searchTerm)
+    let filtered = clients.filter(
+      (client) =>
+        client.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.telefono.includes(searchTerm)
     );
 
     // Sort logic
     filtered.sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
-      
-      if (sortField === 'id') {
+
+      if (sortField === "code") {
         aValue = Number(aValue);
         bValue = Number(bValue);
       } else {
         aValue = String(aValue).toLowerCase();
         bValue = String(bValue).toLowerCase();
       }
-      
-      if (sortDirection === 'asc') {
+
+      if (sortDirection === "asc") {
         return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       } else {
         return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
@@ -127,9 +142,11 @@ export default function ListAll() {
     if (clientToDelete !== null) {
       try {
         await deleteClient(clientToDelete);
-        setClients(clients.filter((c) => c.code?.toString() !== clientToDelete));
+        setClients(
+          clients.filter((c) => c.code?.toString() !== clientToDelete)
+        );
       } catch (err) {
-        setError('Failed to delete client.');
+        setError("Failed to delete client.");
         console.error(err);
       }
     }
@@ -137,12 +154,12 @@ export default function ListAll() {
     setClientToDelete(null);
   };
 
-  const handleSort = (field: 'nombre' | 'apellido' | 'id') => {
+  const handleSort = (field: "nombre" | "apellido" | "code") => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -155,7 +172,9 @@ export default function ListAll() {
           className="text-center space-y-4"
         >
           <Spinner className="w-12 h-12" />
-          <p className="text-lg text-slate-600 dark:text-slate-400">Cargando clientes...</p>
+          <p className="text-lg text-slate-600 dark:text-slate-400">
+            Cargando clientes...
+          </p>
         </motion.div>
       </div>
     );
@@ -193,7 +212,7 @@ export default function ListAll() {
             transition={{
               duration: 20,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear",
             }}
           />
           <motion.div
@@ -205,7 +224,7 @@ export default function ListAll() {
             transition={{
               duration: 25,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear",
             }}
           />
         </div>
@@ -219,9 +238,9 @@ export default function ListAll() {
           >
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/clients')}
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/clients")}
                   className="hover:bg-blue-50 dark:hover:bg-slate-800"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -232,12 +251,14 @@ export default function ListAll() {
                 Lista de Clientes
               </h1>
               <p className="text-slate-600 dark:text-slate-400">
-                {filteredClients.length} cliente{filteredClients.length !== 1 ? 's' : ''} encontrado{filteredClients.length !== 1 ? 's' : ''}
+                {filteredClients.length} cliente
+                {filteredClients.length !== 1 ? "s" : ""} encontrado
+                {filteredClients.length !== 1 ? "s" : ""}
               </p>
             </div>
-            
-            <Button 
-              onClick={() => navigate('/clients/new')}
+
+            <Button
+              onClick={() => navigate("/clients/new")}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -263,20 +284,20 @@ export default function ListAll() {
                       className="pl-10 h-12 border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-blue-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400"
                     />
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Button
-                      variant={viewMode === 'cards' ? 'default' : 'outline'}
+                      variant={viewMode === "cards" ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setViewMode('cards')}
+                      onClick={() => setViewMode("cards")}
                       className="transition-all duration-300"
                     >
                       <Grid3X3 className="h-4 w-4" />
                     </Button>
                     <Button
-                      variant={viewMode === 'table' ? 'default' : 'outline'}
+                      variant={viewMode === "table" ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setViewMode('table')}
+                      onClick={() => setViewMode("table")}
                       className="transition-all duration-300"
                     >
                       <List className="h-4 w-4" />
@@ -289,7 +310,7 @@ export default function ListAll() {
 
           {/* Content */}
           <AnimatePresence mode="wait">
-            {viewMode === 'cards' ? (
+            {viewMode === "cards" ? (
               <motion.div
                 key="cards"
                 initial={{ opacity: 0, y: 20 }}
@@ -313,9 +334,13 @@ export default function ListAll() {
                           {/* Avatar and Name */}
                           <div className="flex items-center space-x-4">
                             <Avatar className="h-16 w-16 ring-4 ring-blue-500/20">
-                              <AvatarImage src={`https://avatar.vercel.sh/${client.nombre}.png`} alt={client.nombre} />
+                              <AvatarImage
+                                src={`https://avatar.vercel.sh/${client.nombre}.png`}
+                                alt={client.nombre}
+                              />
                               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-lg">
-                                {client.nombre.charAt(0)}{client.apellido.charAt(0)}
+                                {client.nombre.charAt(0)}
+                                {client.apellido.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
                             <div className="space-y-1">
@@ -323,7 +348,7 @@ export default function ListAll() {
                                 {client.nombre} {client.apellido}
                               </h3>
                               <Badge variant="secondary" className="text-xs">
-                                ID: {client.id}
+                                Code: {client.code}
                               </Badge>
                             </div>
                           </div>
@@ -344,10 +369,19 @@ export default function ListAll() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => {
-                                    console.log('🔗 [CLIENT LIST] Navegando a editar cliente:', client);
-                                    console.log('🔗 [CLIENT LIST] Client.code:', client.code);
-                                    console.log('🔗 [CLIENT LIST] Client.id:', client.id);
-                                    navigate(`/clients/update/${client.code}`)
+                                    console.log(
+                                      "🔗 [CLIENT LIST] Navegando a editar cliente:",
+                                      client
+                                    );
+                                    console.log(
+                                      "🔗 [CLIENT LIST] Client.code:",
+                                      client.code
+                                    );
+                                    console.log(
+                                      "🔗 [CLIENT LIST] Client.id:",
+                                      client.id
+                                    );
+                                    navigate(`/clients/update/${client.code}`);
                                   }}
                                   className="flex-1 hover:bg-blue-50 dark:hover:bg-blue-950"
                                 >
@@ -359,13 +393,17 @@ export default function ListAll() {
                                 <p>Editar cliente</p>
                               </TooltipContent>
                             </Tooltip>
-                            
+
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
                                   variant="destructive"
                                   size="sm"
-                                  onClick={() => handleDeleteClick(client.code?.toString() || '')}
+                                  onClick={() =>
+                                    handleDeleteClick(
+                                      client.code?.toString() || ""
+                                    )
+                                  }
                                   className="hover:bg-red-600"
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -394,26 +432,32 @@ export default function ListAll() {
                   <Table>
                     <TableHeader>
                       <TableRow className="border-b-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-                        <TableHead 
+                        <TableHead
                           className="cursor-pointer hover:bg-blue-500/20 transition-colors"
-                          onClick={() => handleSort('id')}
+                          onClick={() => handleSort("code")}
                         >
                           <div className="flex items-center gap-2">
-                            ID
-                            {sortField === 'id' && (
-                              sortDirection === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />
-                            )}
+                            Código
+                            {sortField === "code" &&
+                              (sortDirection === "asc" ? (
+                                <SortAsc className="h-4 w-4" />
+                              ) : (
+                                <SortDesc className="h-4 w-4" />
+                              ))}
                           </div>
                         </TableHead>
-                        <TableHead 
+                        <TableHead
                           className="cursor-pointer hover:bg-blue-500/20 transition-colors"
-                          onClick={() => handleSort('nombre')}
+                          onClick={() => handleSort("nombre")}
                         >
                           <div className="flex items-center gap-2">
                             Cliente
-                            {sortField === 'nombre' && (
-                              sortDirection === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />
-                            )}
+                            {sortField === "nombre" &&
+                              (sortDirection === "asc" ? (
+                                <SortAsc className="h-4 w-4" />
+                              ) : (
+                                <SortDesc className="h-4 w-4" />
+                              ))}
                           </div>
                         </TableHead>
                         <TableHead>Teléfono</TableHead>
@@ -430,14 +474,18 @@ export default function ListAll() {
                           className="hover:bg-blue-500/5 transition-colors border-b border-slate-200/50 dark:border-slate-700/50"
                         >
                           <TableCell className="font-mono text-slate-600 dark:text-slate-400">
-                            <Badge variant="outline">#{client.id}</Badge>
+                            <Badge variant="outline">#{client.code}</Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <Avatar className="h-10 w-10">
-                                <AvatarImage src={`https://avatar.vercel.sh/${client.nombre}.png`} alt={client.nombre} />
+                                <AvatarImage
+                                  src={`https://avatar.vercel.sh/${client.nombre}.png`}
+                                  alt={client.nombre}
+                                />
                                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
-                                  {client.nombre.charAt(0)}{client.apellido.charAt(0)}
+                                  {client.nombre.charAt(0)}
+                                  {client.apellido.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
@@ -461,10 +509,21 @@ export default function ListAll() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => {
-                                      console.log('🔗 [CLIENT LIST] Navegando a editar cliente (tabla):', client);
-                                      console.log('🔗 [CLIENT LIST] Client.code:', client.code);
-                                      console.log('🔗 [CLIENT LIST] Client.id:', client.id);
-                                      navigate(`/clients/update/${client.code}`)
+                                      console.log(
+                                        "🔗 [CLIENT LIST] Navegando a editar cliente (tabla):",
+                                        client
+                                      );
+                                      console.log(
+                                        "🔗 [CLIENT LIST] Client.code:",
+                                        client.code
+                                      );
+                                      console.log(
+                                        "🔗 [CLIENT LIST] Client.id:",
+                                        client.id
+                                      );
+                                      navigate(
+                                        `/clients/update/${client.code}`
+                                      );
                                     }}
                                     className="hover:bg-blue-50 dark:hover:bg-blue-950"
                                   >
@@ -475,13 +534,17 @@ export default function ListAll() {
                                   <p>Editar cliente</p>
                                 </TooltipContent>
                               </Tooltip>
-                              
+
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={() => handleDeleteClick(client.code?.toString() || '')}
+                                    onClick={() =>
+                                      handleDeleteClick(
+                                        client.code?.toString() || ""
+                                      )
+                                    }
                                     className="hover:bg-red-600"
                                   >
                                     <Trash2 className="h-4 w-4" />
@@ -514,10 +577,12 @@ export default function ListAll() {
                 No se encontraron clientes
               </h3>
               <p className="text-slate-600 dark:text-slate-400 mb-6">
-                {searchTerm ? 'No hay clientes que coincidan con tu búsqueda' : 'Aún no tienes clientes registrados'}
+                {searchTerm
+                  ? "No hay clientes que coincidan con tu búsqueda"
+                  : "Aún no tienes clientes registrados"}
               </p>
               <Button
-                onClick={() => navigate('/clients/new')}
+                onClick={() => navigate("/clients/new")}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -542,7 +607,8 @@ export default function ListAll() {
                 ¿Eliminar cliente?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                Esta acción no se puede deshacer. El cliente y todos sus datos asociados serán eliminados permanentemente.
+                Esta acción no se puede deshacer. El cliente y todos sus datos
+                asociados serán eliminados permanentemente.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="flex gap-3 pt-4">

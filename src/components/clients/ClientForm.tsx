@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface ClientFormProps {
   client?: Client;
@@ -15,22 +16,17 @@ interface ClientFormProps {
 
 const ClientForm: React.FC<ClientFormProps> = ({ client, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
+    code: client?.code || '' as any,
     nombre: client?.nombre || '',
     apellido: client?.apellido || '',
     telefono: client?.telefono || '',
     email: client?.email || '',
+    password: '',
     genero: client?.genero || 'masculino' as 'masculino' | 'femenino' | 'otro',
-    fechaNacimiento: client?.fechaNacimiento || '',
-    tipoDocumento: client?.tipoDocumento || 'cedula',
-    numeroDocumento: client?.numeroDocumento || '',
+    ci: client?.ci || '',
     direccion: client?.direccion || '',
-    ciudad: client?.ciudad || '',
-    codigoPostal: client?.codigoPostal || '',
-    profesion: client?.profesion || '',
     estado: client?.estado || 'activo' as 'activo' | 'inactivo',
     metodoPrefContacto: client?.metodoPrefContacto || 'telefono' as 'telefono' | 'email' | 'ambos',
-    frecuenciaContacto: client?.frecuenciaContacto || 'media' as 'alta' | 'media' | 'baja',
-    notas: client?.notas || ''
   });
 
   const [loading, setLoading] = useState(false);
@@ -42,7 +38,9 @@ const ClientForm: React.FC<ClientFormProps> = ({ client, onSubmit, onCancel }) =
     try {
       if (client?.id) {
         // Actualizar cliente existente
-        const updatedClient = await updateClient(client.id, formData);
+        // Para actualizar, no enviamos password a menos que se quiera cambiar (no implementado en UI simple)
+        // Y el code generalmente no se cambia, pero lo enviamos si es necesario
+        const updatedClient = await updateClient(client.code, formData);
         onSubmit(updatedClient);
       } else {
         // Crear nuevo cliente
@@ -74,6 +72,29 @@ const ClientForm: React.FC<ClientFormProps> = ({ client, onSubmit, onCancel }) =
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="code">Código</Label>
+                <Input
+                  id="code"
+                  type="number"
+                  value={formData.code}
+                  onChange={(e) => handleInputChange('code', e.target.value)}
+                  required
+                  disabled={!!client} // Deshabilitar si es edición
+                />
+              </div>
+               <div>
+                <Label htmlFor="ci">CI / Documento</Label>
+                <Input
+                  id="ci"
+                  value={formData.ci}
+                  onChange={(e) => handleInputChange('ci', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="nombre">Nombre</Label>
@@ -117,6 +138,19 @@ const ClientForm: React.FC<ClientFormProps> = ({ client, onSubmit, onCancel }) =
               </div>
             </div>
 
+            {!client && (
+              <div>
+                <Label htmlFor="password">Contraseña</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
             <div>
               <Label htmlFor="direccion">Dirección</Label>
               <Input
@@ -129,23 +163,54 @@ const ClientForm: React.FC<ClientFormProps> = ({ client, onSubmit, onCancel }) =
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="ciudad">Ciudad</Label>
-                <Input
-                  id="ciudad"
-                  value={formData.ciudad}
-                  onChange={(e) => handleInputChange('ciudad', e.target.value)}
-                  required
-                />
+                <Label htmlFor="genero">Género</Label>
+                <Select
+                  value={formData.genero}
+                  onValueChange={(value) => handleInputChange('genero', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccione género" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="masculino">Masculino</SelectItem>
+                    <SelectItem value="femenino">Femenino</SelectItem>
+                    <SelectItem value="otro">Otro</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <Label htmlFor="profesion">Profesión</Label>
-                <Input
-                  id="profesion"
-                  value={formData.profesion}
-                  onChange={(e) => handleInputChange('profesion', e.target.value)}
-                />
+                <Label htmlFor="metodoPrefContacto">Preferencia de Contacto</Label>
+                <Select
+                  value={formData.metodoPrefContacto}
+                  onValueChange={(value) => handleInputChange('metodoPrefContacto', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccione método" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="telefono">Teléfono</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="ambos">Ambos</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
+
+             <div>
+                <Label htmlFor="estado">Estado</Label>
+                <Select
+                  value={formData.estado}
+                  onValueChange={(value) => handleInputChange('estado', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccione estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="activo">Activo</SelectItem>
+                    <SelectItem value="inactivo">Inactivo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
             <div className="flex gap-4 pt-4">
               <Button type="submit" disabled={loading}>

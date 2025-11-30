@@ -43,11 +43,11 @@ const ClientsManager: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (code: number) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
       try {
-        await deleteClient(id);
-        setClients(clients.filter(client => client.id !== id));
+        await deleteClient(code.toString());
+        setClients(clients.filter(client => client.code !== code));
       } catch (error) {
         console.error('Error deleting client:', error);
       }
@@ -103,7 +103,7 @@ const ClientsManager: React.FC = () => {
                   </span>
                 </CardTitle>
                 <CardDescription>
-                  ID: {client.id} • {client.genero}
+                  Code: {client.code} • {client.genero}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -115,10 +115,10 @@ const ClientsManager: React.FC = () => {
                     <span className="font-medium">Teléfono:</span> {client.telefono}
                   </p>
                   <p className="text-sm">
-                    <span className="font-medium">Ciudad:</span> {client.ciudad}
+                    <span className="font-medium">Dirección:</span> {client.direccion}
                   </p>
                   <p className="text-sm">
-                    <span className="font-medium">Profesión:</span> {client.profesion}
+                    <span className="font-medium">CI:</span> {client.ci}
                   </p>
                 </div>
                 
@@ -129,7 +129,7 @@ const ClientsManager: React.FC = () => {
                   <Button 
                     size="sm" 
                     variant="destructive"
-                    onClick={() => client.id && handleDelete(client.id)}
+                    onClick={() => client.code && handleDelete(client.code)}
                   >
                     Eliminar
                   </Button>

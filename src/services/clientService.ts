@@ -8,25 +8,19 @@ const USE_MOCK_DATA = false; // Cambiado a false para usar la API real
 
 export interface Client {
   id?: number;
-  code?: number;  // Agregar campo code del backend
+  code: number;
   nombre: string;
   apellido: string;
   telefono: string;
   email: string;
+  password?: string;
   genero: 'masculino' | 'femenino' | 'otro';
-  fechaNacimiento: string;
-  tipoDocumento: string;
-  numeroDocumento: string;
+  ci: string;
   direccion: string;
-  ciudad: string;
-  codigoPostal: string;
-  profesion: string;
   estado: 'activo' | 'inactivo';
   fechaRegistro?: string;
   ultimaActualizacion?: string;
-  notas?: string;
   metodoPrefContacto: 'telefono' | 'email' | 'ambos';
-  frecuenciaContacto: 'alta' | 'media' | 'baja';
 }
 
 // Interface para los datos que vienen del backend
@@ -40,7 +34,7 @@ interface BackendClient {
   type: string;
   gender: string;
   email: string;
-  password: string;
+  password?: string;
   emailVerified: boolean;
   phoneVerified: boolean;
   lastLogin: string;
@@ -53,35 +47,26 @@ interface BackendClient {
 
 // Función para transformar datos del backend al formato del frontend
 const transformBackendClient = (backendClient: BackendClient): Client => {
-  console.log('🔄 [TRANSFORM] Datos originales del backend:', backendClient);
-  console.log('🔄 [TRANSFORM] Campo code disponible:', backendClient.code);
-  console.log('🔄 [TRANSFORM] Campo id disponible:', backendClient.id);
+  // console.log('🔄 [TRANSFORM] Datos originales del backend:', backendClient);
   
-  const transformed = {
+  const transformed: Client = {
     id: backendClient.id,
-    code: backendClient.code,  // Incluir campo code
+    code: backendClient.code,
     nombre: backendClient.name,
     apellido: backendClient.lastname,
     telefono: backendClient.phone,
     email: backendClient.email,
-    genero: backendClient.gender === 'male' ? 'masculino' : backendClient.gender === 'female' ? 'femenino' : 'otro' as 'masculino' | 'femenino' | 'otro',
-    fechaNacimiento: '1990-01-01', // Campo no disponible en backend, usar valor por defecto
-    tipoDocumento: 'CI',
-    numeroDocumento: backendClient.ci.toString(),
+    genero: backendClient.gender === 'male' ? 'masculino' : backendClient.gender === 'female' ? 'femenino' : 'otro',
+    ci: backendClient.ci.toString(),
     direccion: backendClient.address,
-    ciudad: 'La Paz', // Campo no disponible en backend
-    codigoPostal: '0000', // Campo no disponible en backend
-    profesion: 'No especificada', // Campo no disponible en backend
-    estado: backendClient.isActive ? 'activo' : 'inactivo' as 'activo' | 'inactivo',
+    estado: backendClient.isActive ? 'activo' : 'inactivo',
     fechaRegistro: backendClient.createdAt,
     ultimaActualizacion: backendClient.updatedAt,
-    notas: '',
     metodoPrefContacto: (backendClient.preferredContactMethod === 'phone' ? 'telefono' : 
-                      backendClient.preferredContactMethod === 'email' ? 'email' : 'ambos') as 'telefono' | 'email' | 'ambos',
-    frecuenciaContacto: 'media' as 'alta' | 'media' | 'baja' // Campo no disponible en backend
+                      backendClient.preferredContactMethod === 'email' ? 'email' : 'ambos')
   };
   
-  console.log('🔄 [TRANSFORM] Datos transformados:', transformed);
+  // console.log('🔄 [TRANSFORM] Datos transformados:', transformed);
   return transformed;
 };
 
@@ -89,12 +74,14 @@ const transformBackendClient = (backendClient: BackendClient): Client => {
 const transformToBackendClient = (frontendClient: Partial<Client>): any => {
   const backendData: any = {};
   
+  if (frontendClient.code) backendData.clientCode = Number(frontendClient.code);
   if (frontendClient.nombre) backendData.name = frontendClient.nombre;
-  if (frontendClient.apellido) backendData.lastname = frontendClient.apellido;
+  if (frontendClient.apellido) backendData.lastName = frontendClient.apellido;
   if (frontendClient.telefono) backendData.phone = frontendClient.telefono;
   if (frontendClient.email) backendData.email = frontendClient.email;
+  if (frontendClient.password) backendData.password = frontendClient.password;
   if (frontendClient.direccion) backendData.address = frontendClient.direccion;
-  if (frontendClient.numeroDocumento) backendData.ci = parseInt(frontendClient.numeroDocumento);
+  if (frontendClient.ci) backendData.ci = parseInt(frontendClient.ci);
   
   // Transformar género
   if (frontendClient.genero) {
@@ -115,28 +102,6 @@ const transformToBackendClient = (frontendClient: Partial<Client>): any => {
   
   return backendData;
 };
-
-// Interface para los datos que vienen del backend
-interface BackendClient {
-  id: number;
-  code: number;
-  name: string;
-  lastname: string;
-  phone: string;
-  ci: number;
-  type: string;
-  gender: string;
-  email: string;
-  password: string;
-  emailVerified: boolean;
-  phoneVerified: boolean;
-  lastLogin: string;
-  address: string;
-  preferredContactMethod: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export interface ClientFilters {
   estado?: 'activo' | 'inactivo';
@@ -165,13 +130,6 @@ export interface ClientStats {
     email: number;
     ambos: number;
   };
-  porFrecuenciaContacto: {
-    alta: number;
-    media: number;
-    baja: number;
-  };
-  ciudadesMasComunes: Array<{ ciudad: string; count: number }>;
-  edadPromedio: number;
   clientesRecientes: number;
 }
 

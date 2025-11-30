@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { getClientStats } from '../../services/clientService';
 import type { ClientStats } from '../../services/clientService';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Users, UserCheck, UserX, TrendingUp } from 'lucide-react';
+import { Users, UserCheck, UserX } from 'lucide-react';
 
 const ClientStatsComponent: React.FC = () => {
   const [stats, setStats] = useState<ClientStats | null>(null);
@@ -49,7 +49,7 @@ const ClientStatsComponent: React.FC = () => {
     >
       <h2 className="text-2xl font-bold text-gray-900">Estadísticas de Clientes</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Clientes</CardTitle>
@@ -77,16 +77,6 @@ const ClientStatsComponent: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">{stats.inactivos}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Edad Promedio</CardTitle>
-            <TrendingUp className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{stats.edadPromedio} años</div>
           </CardContent>
         </Card>
       </div>
@@ -136,22 +126,6 @@ const ClientStatsComponent: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Ciudades Más Comunes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {stats.ciudadesMasComunes.slice(0, 5).map((ciudad, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <span>{ciudad.ciudad}</span>
-                <span className="font-semibold">{ciudad.count} clientes</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </motion.div>
   );
 };
