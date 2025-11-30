@@ -4,15 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { getClientStats, type ClientStats } from "../../services/clientService";
+import { ClientReports } from "./ClientReports";
 import {
   Users,
   UserPlus,
   Search,
   FileText,
-  TrendingUp,
   ArrowRight,
   Star,
-  Activity,
   UserCheck,
   UserX,
 } from "lucide-react";
@@ -21,6 +20,7 @@ export function ClientPage() {
   const navigate = useNavigate();
   const [statsData, setStatsData] = useState<ClientStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showReports, setShowReports] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -39,25 +39,25 @@ export function ClientPage() {
   const stats = [
     {
       label: "Total Clientes",
-      value: loading ? "..." : (statsData?.total ?? 0).toString(),
+      value: loading ? "..." : (statsData?.totalClients ?? 0).toString(),
       icon: Users,
       color: "from-blue-500 to-blue-600",
     },
     {
       label: "Activos",
-      value: loading ? "..." : (statsData?.activos ?? 0).toString(),
+      value: loading ? "..." : (statsData?.activeClients ?? 0).toString(),
       icon: UserCheck,
       color: "from-emerald-500 to-emerald-600",
     },
     {
       label: "Inactivos",
-      value: loading ? "..." : (statsData?.inactivos ?? 0).toString(),
+      value: loading ? "..." : (statsData?.inactiveClients ?? 0).toString(),
       icon: UserX,
       color: "from-red-500 to-red-600",
     },
     {
-      label: "Nuevos (Recientes)",
-      value: loading ? "..." : (statsData?.clientesRecientes ?? 0).toString(),
+      label: "Reservas Totales",
+      value: loading ? "..." : (statsData?.totalReservations ?? 0).toString(),
       icon: Star,
       color: "from-amber-500 to-amber-600",
     },
@@ -109,13 +109,15 @@ export function ClientPage() {
       icon: FileText,
       color: "from-orange-500 to-orange-600",
       hoverColor: "hover:from-orange-600 hover:to-orange-700",
-      action: () => navigate("/clients/list"),
+      action: () => setShowReports(true),
       features: ["Reportes PDF", "Gráficos interactivos", "Exportar Excel"],
     },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+      <ClientReports open={showReports} onOpenChange={setShowReports} />
+
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div

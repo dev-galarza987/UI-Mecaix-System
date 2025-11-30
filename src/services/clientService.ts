@@ -134,20 +134,32 @@ export interface ClientFilters {
 }
 
 export interface ClientStats {
-  total: number;
-  activos: number;
-  inactivos: number;
-  porGenero: {
-    masculino: number;
-    femenino: number;
-    otro: number;
+  totalClients: number;
+  activeClients: number;
+  inactiveClients: number;
+  totalReservations: number;
+  totalRevenue: number;
+  averageReservationsPerClient: number;
+  averageRevenuePerClient: number;
+  genderDistribution: {
+    male: number;
+    female: number;
   };
-  porMetodoContacto: {
-    telefono: number;
+  contactMethodDistribution: {
+    phone: number;
     email: number;
-    ambos: number;
+    whatsapp: number;
   };
-  clientesRecientes: number;
+}
+
+export interface TopClient {
+  code: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  totalReservations: number;
+  totalSpent: number;
+  lastVisit: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -383,6 +395,15 @@ export const searchClients = async (query: string): Promise<Client[]> => {
 
 export const getClientStats = async (): Promise<ClientStats> => {
   const response = await apiClient.get(`${API_BASE_URL}/statistics/general`);
+  return response.data;
+};
+
+export const getTopClients = async (
+  limit: number = 10
+): Promise<TopClient[]> => {
+  const response = await apiClient.get(`${API_BASE_URL}/statistics/top`, {
+    params: { limit },
+  });
   return response.data;
 };
 
