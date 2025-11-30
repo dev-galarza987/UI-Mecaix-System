@@ -170,11 +170,13 @@ export default function ListAllMechanics() {
   const handleDelete = async (employeeCode: string) => {
     if (window.confirm('¿Está seguro de que desea eliminar este mecánico?')) {
       try {
+        console.log('🗑️ [MECHANICS LIST] Iniciando eliminación de mecánico:', employeeCode);
         await mechanicService.deleteMechanic(employeeCode);
+        console.log('✅ [MECHANICS LIST] Mecánico eliminado exitosamente');
         toast.success('Mecánico eliminado exitosamente');
         fetchMechanics();
       } catch (error) {
-        console.error('Error deleting mechanic:', error);
+        console.error('❌ [MECHANICS LIST] Error eliminando mecánico:', error);
         toast.error('Error al eliminar el mecánico. Puede que tenga servicios asignados.');
       }
     }

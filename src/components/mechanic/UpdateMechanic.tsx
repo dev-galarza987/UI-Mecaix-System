@@ -35,7 +35,7 @@ const formSchema = z.object({
   employeeCode: z.string().min(1, "El código de empleado es requerido"),
   firstName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   lastName: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
-  phone: z.string().min(10, "El teléfono debe tener al menos 10 caracteres"),
+  phone: z.string().min(7, "El teléfono debe tener al menos 7 caracteres"),
   hireDate: z.string().min(1, "La fecha de contratación es requerida"),
   yearsExperience: z.number().min(0, "Los años de experiencia deben ser 0 o mayor").max(50, "Los años de experiencia no pueden ser más de 50"),
   experienceLevel: z.enum(['trainee', 'junior', 'senior', 'expert', 'master']),
@@ -108,9 +108,12 @@ export default function UpdateMechanic() {
 
       try {
         setLoadingData(true);
-        const mechanicData = await mechanicService.getMechanicByEmployeeCode(employeeCode);
+        console.log('🔍 [UPDATE MECHANIC] Intentando cargar mecánico con código:', employeeCode);
         
-        console.log('✅ [UPDATE MECHANIC] Datos del mecánico cargados:', mechanicData);
+        // Primero intentemos con getMechanicByCode (mismo que funciona en detalles)
+        const mechanicData = await mechanicService.getMechanicByCode(employeeCode);
+        
+        console.log('✅ [UPDATE MECHANIC] Datos del mecánico cargados exitosamente:', mechanicData);
 
         if (mechanicData) {
           form.reset({
@@ -134,9 +137,22 @@ export default function UpdateMechanic() {
           toast.error('Error al cargar los datos del mecánico');
         }
       } catch (error) {
-        console.error('❌ [UPDATE MECHANIC] Error al cargar datos:', error);
-        toast.error('Error al cargar los datos del mecánico');
-        navigate('/mechanics/list');
+        console.error('❌ [UPDATE MECHANIC] Error detallado al cargar datos:', error);
+        console.error('❌ [UPDATE MECHANIC] Error type:', typeof error);
+        console.error('❌ [UPDATE MECHANIC] Error message:', error instanceof Error ? error.message : 'Error desconocido');
+        console.error('❌ [UPDATE MECHANIC] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+        
+        if (error instanceof Error) {
+          toast.error(`Error al cargar los datos del mecánico: ${error.message}`);
+        } else {
+          toast.error('Error desconocido al cargar los datos del mecánico');
+        }
+        
+        // No navegar inmediatamente, dar una oportunidad al usuario
+        console.log('⏳ [UPDATE MECHANIC] Esperando 3 segundos antes de redirigir...');
+        setTimeout(() => {
+          navigate('/mechanics/list');
+        }, 3000);
       } finally {
         setLoadingData(false);
       }
@@ -173,8 +189,15 @@ export default function UpdateMechanic() {
       const result = await mechanicService.updateMechanic(employeeCode!, mechanicData);
       console.log('✅ [UPDATE MECHANIC] Mecánico actualizado:', result);
 
-      toast.success('Mecánico actualizado exitosamente');
-      navigate('/mechanics/list');
+      // Verificar si fue una actualización parcial (solo status)
+      if (result.message && result.message.includes('Solo se actualizó el status')) {
+        toast.warning('⚠️ Actualización parcial: Solo se pudo actualizar el estado. El backend requiere revisión para actualizar otros campos.');
+        // Redirigir después de un momento para que el usuario vea el mensaje
+        setTimeout(() => navigate('/mechanics/list'), 2000);
+      } else {
+        toast.success('✅ Mecánico actualizado exitosamente');
+        navigate('/mechanics/list');
+      }
     } catch (error) {
       console.error('❌ [UPDATE MECHANIC] Error:', error);
       toast.error('Error al actualizar el mecánico: ' + (error instanceof Error ? error.message : 'Error desconocido'));

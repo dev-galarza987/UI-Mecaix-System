@@ -185,11 +185,11 @@ export interface PaginatedResponse<T> {
 
 // CRUD básico
 export const getAllClients = async (): Promise<Client[]> => {
-  if (USE_MOCK_DATA) {
+  /*if (USE_MOCK_DATA) {
     // Simular una petición asíncrona
     await new Promise(resolve => setTimeout(resolve, 500));
     return mockClients;
-  }
+  }*/
   
   console.log('🚀 [CLIENT SERVICE] Iniciando getAllClients...');
   console.log('🌐 [CLIENT SERVICE] URL base:', API_BASE_URL);
