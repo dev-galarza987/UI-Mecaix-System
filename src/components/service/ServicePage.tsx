@@ -1,17 +1,17 @@
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-import { 
-  Wrench, 
-  List, 
-  Plus, 
-  TrendingUp, 
-  Clock, 
-  Star, 
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import {
+  Wrench,
+  List,
+  Plus,
+  TrendingUp,
+  Clock,
+  Star,
   ArrowRight,
   Settings,
-  DollarSign 
-} from 'lucide-react';
+  DollarSign,
+} from "lucide-react";
 
 export function ServicePage() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export function ServicePage() {
     total: 89,
     active: 76,
     premium: 15,
-    recent: 8
+    recent: 8,
   };
 
   return (
@@ -37,7 +37,7 @@ export function ServicePage() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
         <motion.div
@@ -49,7 +49,7 @@ export function ServicePage() {
           transition={{
             duration: 25,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
         <motion.div
@@ -61,7 +61,7 @@ export function ServicePage() {
           transition={{
             duration: 15,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
       </div>
@@ -84,7 +84,8 @@ export function ServicePage() {
             Gestión de Servicios
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Administra tu catálogo de servicios con herramientas profesionales de gestión y control
+            Administra tu catálogo de servicios con herramientas profesionales
+            de gestión y control
           </p>
         </motion.div>
 
@@ -93,7 +94,7 @@ export function ServicePage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
         >
           <motion.div
             whileHover={{ scale: 1.05, y: -5 }}
@@ -101,8 +102,10 @@ export function ServicePage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Total</p>
-                <motion.p 
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Total
+                </p>
+                <motion.p
                   className="text-3xl font-bold text-purple-600 dark:text-purple-400"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -123,8 +126,10 @@ export function ServicePage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Activos</p>
-                <motion.p 
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Activos
+                </p>
+                <motion.p
                   className="text-3xl font-bold text-green-600 dark:text-green-400"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -145,8 +150,10 @@ export function ServicePage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Premium</p>
-                <motion.p 
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Premium
+                </p>
+                <motion.p
                   className="text-3xl font-bold text-amber-600 dark:text-amber-400"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -167,8 +174,10 @@ export function ServicePage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Recientes</p>
-                <motion.p 
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  Recientes
+                </p>
+                <motion.p
                   className="text-3xl font-bold text-blue-600 dark:text-blue-400"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -195,7 +204,7 @@ export function ServicePage() {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             className="group cursor-pointer"
-            onClick={() => navigate('/services/list')}
+            onClick={() => navigate("/services/list")}
           >
             <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/90 to-purple-50/90 dark:from-slate-800/90 dark:to-slate-700/90 backdrop-blur-lg hover:shadow-purple-500/20 transition-all duration-500">
               <CardHeader className="text-center pb-4">
@@ -211,7 +220,8 @@ export function ServicePage() {
               </CardHeader>
               <CardContent className="text-center space-y-4">
                 <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Explora, edita y gestiona todos los servicios disponibles en tu catálogo con herramientas avanzadas de búsqueda.
+                  Explora, edita y gestiona todos los servicios disponibles en
+                  tu catálogo con herramientas avanzadas de búsqueda.
                 </p>
                 <div className="flex items-center justify-center gap-2 text-purple-600 dark:text-purple-400 font-medium group-hover:gap-4 transition-all duration-300">
                   Ver Lista
@@ -230,7 +240,7 @@ export function ServicePage() {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             className="group cursor-pointer"
-            onClick={() => navigate('/services/new')}
+            onClick={() => navigate("/services/new")}
           >
             <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/90 to-violet-50/90 dark:from-slate-800/90 dark:to-slate-700/90 backdrop-blur-lg hover:shadow-violet-500/20 transition-all duration-500">
               <CardHeader className="text-center pb-4">
@@ -246,7 +256,8 @@ export function ServicePage() {
               </CardHeader>
               <CardContent className="text-center space-y-4">
                 <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Agrega un nuevo servicio al catálogo con descripción detallada, precios y especificaciones técnicas.
+                  Agrega un nuevo servicio al catálogo con descripción
+                  detallada, precios y especificaciones técnicas.
                 </p>
                 <div className="flex items-center justify-center gap-2 text-violet-600 dark:text-violet-400 font-medium group-hover:gap-4 transition-all duration-300">
                   Registrar Servicio
@@ -281,12 +292,17 @@ export function ServicePage() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600 dark:text-slate-400">
                     <div className="space-y-2">
-                      <p>• Define precios competitivos y justos para cada servicio</p>
+                      <p>
+                        • Define precios competitivos y justos para cada
+                        servicio
+                      </p>
                       <p>• Mantén descripciones claras y detalladas</p>
                     </div>
                     <div className="space-y-2">
                       <p>• Revisa regularmente la demanda de tus servicios</p>
-                      <p>• Actualiza el catálogo según las tendencias del mercado</p>
+                      <p>
+                        • Actualiza el catálogo según las tendencias del mercado
+                      </p>
                     </div>
                   </div>
                 </div>

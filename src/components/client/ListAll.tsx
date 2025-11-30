@@ -78,15 +78,8 @@ export default function ListAll() {
         setLoading(true);
         const data = await getAllClients();
         console.log("📋 [CLIENT LIST] Datos recibidos:", data);
-        console.log("📋 [CLIENT LIST] Tipo de datos:", typeof data);
-        console.log("📋 [CLIENT LIST] Es array?:", Array.isArray(data));
         if (Array.isArray(data) && data.length > 0) {
           console.log("📋 [CLIENT LIST] Primer cliente completo:", data[0]);
-          console.log(
-            "📋 [CLIENT LIST] Code del primer cliente:",
-            data[0].code
-          );
-          console.log("📋 [CLIENT LIST] ID del primer cliente:", data[0].id);
         }
         setClients(data);
         setFilteredClients(data);
@@ -275,13 +268,13 @@ export default function ListAll() {
             <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg">
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row gap-4 items-center">
-                  <div className="relative flex-1">
+                  <div className="relative flex-1 w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <Input
                       placeholder="Buscar por nombre, apellido o teléfono..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 h-12 border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-blue-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400"
+                      className="pl-10 h-12 border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-blue-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 w-full"
                     />
                   </div>
 
@@ -369,18 +362,6 @@ export default function ListAll() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => {
-                                    console.log(
-                                      "🔗 [CLIENT LIST] Navegando a editar cliente:",
-                                      client
-                                    );
-                                    console.log(
-                                      "🔗 [CLIENT LIST] Client.code:",
-                                      client.code
-                                    );
-                                    console.log(
-                                      "🔗 [CLIENT LIST] Client.id:",
-                                      client.id
-                                    );
                                     navigate(`/clients/update/${client.code}`);
                                   }}
                                   className="flex-1 hover:bg-blue-50 dark:hover:bg-blue-950"
@@ -429,137 +410,127 @@ export default function ListAll() {
                 transition={{ delay: 0.2 }}
               >
                 <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-b-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-                        <TableHead
-                          className="cursor-pointer hover:bg-blue-500/20 transition-colors"
-                          onClick={() => handleSort("code")}
-                        >
-                          <div className="flex items-center gap-2">
-                            Código
-                            {sortField === "code" &&
-                              (sortDirection === "asc" ? (
-                                <SortAsc className="h-4 w-4" />
-                              ) : (
-                                <SortDesc className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </TableHead>
-                        <TableHead
-                          className="cursor-pointer hover:bg-blue-500/20 transition-colors"
-                          onClick={() => handleSort("nombre")}
-                        >
-                          <div className="flex items-center gap-2">
-                            Cliente
-                            {sortField === "nombre" &&
-                              (sortDirection === "asc" ? (
-                                <SortAsc className="h-4 w-4" />
-                              ) : (
-                                <SortDesc className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </TableHead>
-                        <TableHead>Teléfono</TableHead>
-                        <TableHead className="text-right">Acciones</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredClients.map((client, index) => (
-                        <motion.tr
-                          key={client.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.05 * index }}
-                          className="hover:bg-blue-500/5 transition-colors border-b border-slate-200/50 dark:border-slate-700/50"
-                        >
-                          <TableCell className="font-mono text-slate-600 dark:text-slate-400">
-                            <Badge variant="outline">#{client.code}</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-10 w-10">
-                                <AvatarImage
-                                  src={`https://avatar.vercel.sh/${client.nombre}.png`}
-                                  alt={client.nombre}
-                                />
-                                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
-                                  {client.nombre.charAt(0)}
-                                  {client.apellido.charAt(0)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-medium text-slate-900 dark:text-white">
-                                  {client.nombre} {client.apellido}
-                                </p>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="border-b-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+                          <TableHead
+                            className="cursor-pointer hover:bg-blue-500/20 transition-colors"
+                            onClick={() => handleSort("code")}
+                          >
+                            <div className="flex items-center gap-2 whitespace-nowrap">
+                              Código
+                              {sortField === "code" &&
+                                (sortDirection === "asc" ? (
+                                  <SortAsc className="h-4 w-4" />
+                                ) : (
+                                  <SortDesc className="h-4 w-4" />
+                                ))}
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-blue-500/20 transition-colors"
+                            onClick={() => handleSort("nombre")}
+                          >
+                            <div className="flex items-center gap-2 whitespace-nowrap">
+                              Cliente
+                              {sortField === "nombre" &&
+                                (sortDirection === "asc" ? (
+                                  <SortAsc className="h-4 w-4" />
+                                ) : (
+                                  <SortDesc className="h-4 w-4" />
+                                ))}
+                            </div>
+                          </TableHead>
+                          <TableHead>Teléfono</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredClients.map((client, index) => (
+                          <motion.tr
+                            key={client.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.05 * index }}
+                            className="hover:bg-blue-500/5 transition-colors border-b border-slate-200/50 dark:border-slate-700/50"
+                          >
+                            <TableCell className="font-mono text-slate-600 dark:text-slate-400">
+                              <Badge variant="outline">#{client.code}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10">
+                                  <AvatarImage
+                                    src={`https://avatar.vercel.sh/${client.nombre}.png`}
+                                    alt={client.nombre}
+                                  />
+                                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
+                                    {client.nombre.charAt(0)}
+                                    {client.apellido.charAt(0)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-medium text-slate-900 dark:text-white whitespace-nowrap">
+                                    {client.nombre} {client.apellido}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-slate-600 dark:text-slate-400">
-                            <div className="flex items-center gap-2">
-                              <Phone className="h-4 w-4" />
-                              {client.telefono}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex gap-2 justify-end">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      console.log(
-                                        "🔗 [CLIENT LIST] Navegando a editar cliente (tabla):",
-                                        client
-                                      );
-                                      console.log(
-                                        "🔗 [CLIENT LIST] Client.code:",
-                                        client.code
-                                      );
-                                      console.log(
-                                        "🔗 [CLIENT LIST] Client.id:",
-                                        client.id
-                                      );
-                                      navigate(
-                                        `/clients/update/${client.code}`
-                                      );
-                                    }}
-                                    className="hover:bg-blue-50 dark:hover:bg-blue-950"
-                                  >
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Editar cliente</p>
-                                </TooltipContent>
-                              </Tooltip>
+                            </TableCell>
+                            <TableCell className="text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-4 w-4" />
+                                {client.telefono}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex gap-2 justify-end">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        navigate(
+                                          `/clients/update/${client.code}`
+                                        );
+                                      }}
+                                      className="hover:bg-blue-50 dark:hover:bg-blue-950"
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Editar cliente</p>
+                                  </TooltipContent>
+                                </Tooltip>
 
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() =>
-                                      handleDeleteClick(
-                                        client.code?.toString() || ""
-                                      )
-                                    }
-                                    className="hover:bg-red-600"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Eliminar cliente</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
-                          </TableCell>
-                        </motion.tr>
-                      ))}
-                    </TableBody>
-                  </Table>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      onClick={() =>
+                                        handleDeleteClick(
+                                          client.code?.toString() || ""
+                                        )
+                                      }
+                                      className="hover:bg-red-600"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Eliminar cliente</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                            </TableCell>
+                          </motion.tr>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </Card>
               </motion.div>
             )}

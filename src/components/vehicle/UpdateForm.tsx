@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -12,39 +12,51 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Spinner } from '@/components/ui/spinner';
-import { vehicleService, type VehicleData } from '../../services/vehicleService';
-import { useNavigate, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  Car, 
-  CreditCard, 
-  Tag, 
+} from "@/components/ui/form";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  vehicleService,
+  type VehicleData,
+} from "../../services/vehicleService";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Car,
+  CreditCard,
+  Tag,
   Calendar,
   Edit,
   Save,
   AlertTriangle,
   CheckCircle,
-  CarFront
-} from 'lucide-react';
+  CarFront,
+} from "lucide-react";
 
 const formSchema = z.object({
-  board: z.string()
-    .min(3, { message: 'La placa debe tener al menos 3 caracteres.' })
-    .max(10, { message: 'La placa no puede tener más de 10 caracteres.' })
-    .regex(/^[A-Z0-9-]+$/, { message: 'La placa solo puede contener letras mayúsculas, números y guiones.' }),
-  brand: z.string()
-    .min(2, { message: 'La marca debe tener al menos 2 caracteres.' })
-    .max(50, { message: 'La marca no puede tener más de 50 caracteres.' }),
-  model: z.string()
-    .min(2, { message: 'El modelo debe tener al menos 2 caracteres.' })
-    .max(50, { message: 'El modelo no puede tener más de 50 caracteres.' }),
-  year: z.coerce.number()
-    .int({ message: 'El año debe ser un número entero.' })
-    .min(1900, { message: 'El año debe ser mayor a 1900.' })
-    .max(new Date().getFullYear() + 1, { message: 'El año no puede ser mayor al próximo año.' }),
+  board: z
+    .string()
+    .min(3, { message: "La placa debe tener al menos 3 caracteres." })
+    .max(10, { message: "La placa no puede tener más de 10 caracteres." })
+    .regex(/^[A-Z0-9-]+$/, {
+      message:
+        "La placa solo puede contener letras mayúsculas, números y guiones.",
+    }),
+  brand: z
+    .string()
+    .min(2, { message: "La marca debe tener al menos 2 caracteres." })
+    .max(50, { message: "La marca no puede tener más de 50 caracteres." }),
+  model: z
+    .string()
+    .min(2, { message: "El modelo debe tener al menos 2 caracteres." })
+    .max(50, { message: "El modelo no puede tener más de 50 caracteres." }),
+  year: z.coerce
+    .number()
+    .int({ message: "El año debe ser un número entero." })
+    .min(1900, { message: "El año debe ser mayor a 1900." })
+    .max(new Date().getFullYear() + 1, {
+      message: "El año no puede ser mayor al próximo año.",
+    }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -56,15 +68,15 @@ export default function VehicleUpdateForm() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [submitError, setSubmitError] = useState<string>('');
+  const [submitError, setSubmitError] = useState<string>("");
   const [originalData, setOriginalData] = useState<FormData | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      board: '',
-      brand: '',
-      model: '',
+      board: "",
+      brand: "",
+      model: "",
       year: new Date().getFullYear(),
     },
   });
@@ -83,13 +95,13 @@ export default function VehicleUpdateForm() {
         form.reset(vehicleData);
         setOriginalData(vehicleData);
       } catch (error) {
-        console.error('Failed to fetch vehicle', error);
-        setSubmitError('Error al cargar los datos del vehículo');
+        console.error("Failed to fetch vehicle", error);
+        setSubmitError("Error al cargar los datos del vehículo");
       } finally {
         setLoading(false);
       }
     };
-    
+
     if (vehicleId) {
       fetchVehicle();
     }
@@ -98,22 +110,25 @@ export default function VehicleUpdateForm() {
   async function onSubmit(values: FormData) {
     try {
       setSaving(true);
-      setSubmitError('');
-      
+      setSubmitError("");
+
       const vehicleData: Partial<VehicleData> = {
         ...values,
-        board: values.board.toUpperCase()
+        board: values.board.toUpperCase(),
       };
-      
+
       await vehicleService.updateVehicle(vehicleId, vehicleData);
-      
+
       // Success animation delay
       setTimeout(() => {
-        navigate('/vehicles/list');
+        navigate("/vehicles/list");
       }, 1000);
     } catch (error) {
-      console.error('Failed to update vehicle', error);
-      const errorMessage = error instanceof Error ? error.message : 'Error al actualizar el vehículo. Inténtalo nuevamente.';
+      console.error("Failed to update vehicle", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al actualizar el vehículo. Inténtalo nuevamente.";
       setSubmitError(errorMessage);
     } finally {
       setSaving(false);
@@ -122,7 +137,7 @@ export default function VehicleUpdateForm() {
 
   const handleBoardInput = (value: string) => {
     // Auto-format plate to uppercase
-    return value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    return value.toUpperCase().replace(/[^A-Z0-9-]/g, "");
   };
 
   const hasChanges = () => {
@@ -145,7 +160,9 @@ export default function VehicleUpdateForm() {
           className="text-center space-y-4"
         >
           <Spinner className="w-12 h-12" />
-          <p className="text-lg text-slate-600 dark:text-slate-400">Cargando datos del vehículo...</p>
+          <p className="text-lg text-slate-600 dark:text-slate-400">
+            Cargando datos del vehículo...
+          </p>
         </motion.div>
       </div>
     );
@@ -160,8 +177,10 @@ export default function VehicleUpdateForm() {
           className="text-center space-y-4"
         >
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto" />
-          <p className="text-xl text-red-600 dark:text-red-400">{submitError}</p>
-          <Button onClick={() => navigate('/vehicles/list')} variant="outline">
+          <p className="text-xl text-red-600 dark:text-red-400">
+            {submitError}
+          </p>
+          <Button onClick={() => navigate("/vehicles/list")} variant="outline">
             Volver a la Lista
           </Button>
         </motion.div>
@@ -182,7 +201,7 @@ export default function VehicleUpdateForm() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
         <motion.div
@@ -194,7 +213,7 @@ export default function VehicleUpdateForm() {
           transition={{
             duration: 25,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
       </div>
@@ -206,9 +225,9 @@ export default function VehicleUpdateForm() {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-4 mb-8"
         >
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/vehicles/list')}
+          <Button
+            variant="outline"
+            onClick={() => navigate("/vehicles/list")}
             className="hover:bg-cyan-50 dark:hover:bg-slate-800"
             disabled={saving}
           >
@@ -245,10 +264,13 @@ export default function VehicleUpdateForm() {
                 Actualizar Información
               </CardTitle>
             </CardHeader>
-            
+
             <CardContent className="space-y-6 p-8">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Board Field */}
                     <motion.div
@@ -262,7 +284,8 @@ export default function VehicleUpdateForm() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                              Placa del Vehículo <span className="text-red-500">*</span>
+                              Placa del Vehículo{" "}
+                              <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
                               <div className="relative">
@@ -271,7 +294,9 @@ export default function VehicleUpdateForm() {
                                   placeholder="Ej: ABC-123"
                                   {...field}
                                   onChange={(e) => {
-                                    const formatted = handleBoardInput(e.target.value);
+                                    const formatted = handleBoardInput(
+                                      e.target.value
+                                    );
                                     field.onChange(formatted);
                                   }}
                                   className="pl-10 h-12 border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-cyan-500 transition-all duration-300 font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 placeholder:text-slate-500 dark:placeholder:text-slate-400"
@@ -367,7 +392,12 @@ export default function VehicleUpdateForm() {
                                   type="number"
                                   placeholder="2024"
                                   {...field}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value) || new Date().getFullYear())}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      parseInt(e.target.value) ||
+                                        new Date().getFullYear()
+                                    )
+                                  }
                                   className="pl-10 h-12 border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-cyan-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400"
                                 />
                               </div>
@@ -388,7 +418,9 @@ export default function VehicleUpdateForm() {
                     >
                       <div className="flex items-center gap-2 text-cyan-600 dark:text-cyan-400">
                         <Edit className="h-5 w-5" />
-                        <span className="font-medium">Tienes cambios pendientes por guardar</span>
+                        <span className="font-medium">
+                          Tienes cambios pendientes por guardar
+                        </span>
                       </div>
                     </motion.div>
                   )}
@@ -412,18 +444,18 @@ export default function VehicleUpdateForm() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
-                    className="flex gap-4"
+                    className="flex flex-col md:flex-row gap-4"
                   >
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => navigate('/vehicles/list')}
+                      onClick={() => navigate("/vehicles/list")}
                       className="flex-1 h-14 text-lg transition-all duration-300"
                       disabled={saving}
                     >
                       Cancelar
                     </Button>
-                    
+
                     <motion.div
                       className="flex-1"
                       whileHover={{ scale: saving ? 1 : 1.02 }}
@@ -438,7 +470,11 @@ export default function VehicleUpdateForm() {
                           <div className="flex items-center gap-2">
                             <motion.div
                               animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                              transition={{
+                                duration: 1,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }}
                               className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
                             />
                             Guardando...
@@ -480,9 +516,17 @@ export default function VehicleUpdateForm() {
                   </h3>
                   <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
                     <li>• Solo se guardaran los campos que hayas modificado</li>
-                    <li>• La placa se convertirá automáticamente a mayúsculas</li>
-                    <li>• Verifica que la información sea correcta antes de guardar</li>
-                    <li>• Puedes cancelar en cualquier momento para descartar los cambios</li>
+                    <li>
+                      • La placa se convertirá automáticamente a mayúsculas
+                    </li>
+                    <li>
+                      • Verifica que la información sea correcta antes de
+                      guardar
+                    </li>
+                    <li>
+                      • Puedes cancelar en cualquier momento para descartar los
+                      cambios
+                    </li>
                   </ul>
                 </div>
               </div>

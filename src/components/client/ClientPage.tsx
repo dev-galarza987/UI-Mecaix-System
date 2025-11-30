@@ -39,25 +39,25 @@ export function ClientPage() {
   const stats = [
     {
       label: "Total Clientes",
-      value: loading ? "..." : statsData?.total.toString() || "0",
+      value: loading ? "..." : (statsData?.total ?? 0).toString(),
       icon: Users,
       color: "from-blue-500 to-blue-600",
     },
     {
       label: "Activos",
-      value: loading ? "..." : statsData?.activos.toString() || "0",
+      value: loading ? "..." : (statsData?.activos ?? 0).toString(),
       icon: UserCheck,
       color: "from-emerald-500 to-emerald-600",
     },
     {
       label: "Inactivos",
-      value: loading ? "..." : statsData?.inactivos.toString() || "0",
+      value: loading ? "..." : (statsData?.inactivos ?? 0).toString(),
       icon: UserX,
       color: "from-red-500 to-red-600",
     },
     {
       label: "Nuevos (Recientes)",
-      value: loading ? "..." : statsData?.clientesRecientes.toString() || "0",
+      value: loading ? "..." : (statsData?.clientesRecientes ?? 0).toString(),
       icon: Star,
       color: "from-amber-500 to-amber-600",
     },

@@ -460,7 +460,7 @@ export default function UpdateForm() {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex gap-4">
+                <div className="flex flex-col md:flex-row gap-4">
                   <Button
                     type="button"
                     variant="outline"

@@ -1,41 +1,31 @@
-import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { 
-  ArrowLeft, 
-  Plus, 
-  Search, 
-  Filter, 
-  Grid, 
-  List, 
-  Edit,
+import { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import {
+  ArrowLeft,
+  Plus,
+  Search,
+  Filter,
+  Grid,
+  List,
   Pencil,
-  Trash2, 
-  Eye,
+  Trash2,
   Calendar,
-  User,
-  DollarSign,
   Clock,
   CheckCircle,
   XCircle,
   AlertCircle,
-  MoreHorizontal,
-  SortAsc,
-  SortDesc
-} from 'lucide-react';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -43,51 +33,31 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { useNavigate } from 'react-router-dom';
-import { reservateService, type Reservate } from '../../services/reservateService';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+} from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
+import {
+  reservateService,
+  type Reservate,
+} from "../../services/reservateService";
+import { toast } from "sonner";
 
-type ViewMode = 'table' | 'grid';
-type SortField = 'code' | 'date' | 'client' | 'total' | 'state';
-type SortOrder = 'asc' | 'desc';
-
-const stateColors = {
-  pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  confirmed: 'bg-blue-100 text-blue-800 border-blue-200',
-  in_progress: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  completed: 'bg-green-100 text-green-800 border-green-200',
-  cancelled: 'bg-red-100 text-red-800 border-red-200',
-};
-
-const stateLabels = {
-  pending: 'Pendiente',
-  confirmed: 'Confirmada',
-  in_progress: 'En Progreso',
-  completed: 'Completada',
-  cancelled: 'Cancelada',
-};
-
-const stateIcons = {
-  pending: Clock,
-  confirmed: CheckCircle,
-  in_progress: AlertCircle,
-  completed: CheckCircle,
-  cancelled: XCircle,
-};
+type ViewMode = "table" | "grid";
+type SortField = "code" | "date" | "client" | "total" | "state";
+type SortOrder = "asc" | "desc";
 
 export default function ReservateListAll() {
   const navigate = useNavigate();
   const [reservates, setReservates] = useState<Reservate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [stateFilter, setStateFilter] = useState<string>('all');
-  const [sortField, setSortField] = useState<SortField>('date');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; reservate: Reservate | null }>({
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [stateFilter, setStateFilter] = useState<string>("all");
+  const [sortField, setSortField] = useState<SortField>("date");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    reservate: Reservate | null;
+  }>({
     open: false,
     reservate: null,
   });
@@ -98,24 +68,24 @@ export default function ReservateListAll() {
 
   const fetchReservates = async () => {
     try {
-      console.log('🚀 [LIST ALL] Iniciando fetchReservates...');
+      console.log("🚀 [LIST ALL] Iniciando fetchReservates...");
       setLoading(true);
       const data = await reservateService.getAllReservates();
-      console.log('✅ [LIST ALL] Datos recibidos:', data);
-      console.log('✅ [LIST ALL] Tipo de datos:', typeof data);
-      console.log('✅ [LIST ALL] Es array:', Array.isArray(data));
-      console.log('✅ [LIST ALL] Longitud:', data?.length);
-      
+      console.log("✅ [LIST ALL] Datos recibidos:", data);
+      console.log("✅ [LIST ALL] Tipo de datos:", typeof data);
+      console.log("✅ [LIST ALL] Es array:", Array.isArray(data));
+      console.log("✅ [LIST ALL] Longitud:", data?.length);
+
       if (data && Array.isArray(data) && data.length > 0) {
-        console.log('✅ [LIST ALL] Primera reserva:', data[0]);
+        console.log("✅ [LIST ALL] Primera reserva:", data[0]);
         setReservates(data);
       } else {
-        console.warn('⚠️ [LIST ALL] Datos vacíos o inválidos:', data);
+        console.warn("⚠️ [LIST ALL] Datos vacíos o inválidos:", data);
         setReservates([]);
       }
     } catch (error) {
-      console.error('❌ [LIST ALL] Error fetching reservates:', error);
-      toast.error('Error al cargar las reservaciones');
+      console.error("❌ [LIST ALL] Error fetching reservates:", error);
+      toast.error("Error al cargar las reservaciones");
       setReservates([]);
     } finally {
       setLoading(false);
@@ -124,38 +94,37 @@ export default function ReservateListAll() {
 
   const handleDelete = async (reservate: Reservate) => {
     try {
-      console.log('🗑️ [LIST ALL] Iniciando eliminación de reserva:', reservate.code);
+      console.log(
+        "🗑️ [LIST ALL] Iniciando eliminación de reserva:",
+        reservate.code
+      );
       await reservateService.deleteReservate(reservate.code);
-      console.log('✅ [LIST ALL] Reserva eliminada exitosamente');
-      toast.success('Reservación eliminada exitosamente');
+      console.log("✅ [LIST ALL] Reserva eliminada exitosamente");
+      toast.success("Reservación eliminada exitosamente");
       fetchReservates();
     } catch (error) {
-      console.error('❌ [LIST ALL] Error deleting reservate:', error);
-      toast.error('Error al eliminar la reservación');
+      console.error("❌ [LIST ALL] Error deleting reservate:", error);
+      toast.error("Error al eliminar la reservación");
     }
     setDeleteDialog({ open: false, reservate: null });
   };
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
-
   const filteredAndSortedReservates = useMemo(() => {
-    let filtered = reservates.filter(reservate => {
-      const matchesSearch = 
-        reservate.client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reservate.client?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const filtered = reservates.filter((reservate) => {
+      const matchesSearch =
+        reservate.client?.name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        reservate.client?.lastName
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         reservate.code?.toString().includes(searchTerm) ||
-        reservate.services?.some((service: any) => 
+        reservate.services?.some((service: any) =>
           service.title?.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
-      const matchesState = stateFilter === 'all' || reservate.state === stateFilter;
+      const matchesState =
+        stateFilter === "all" || reservate.state === stateFilter;
 
       return matchesSearch && matchesState;
     });
@@ -164,33 +133,36 @@ export default function ReservateListAll() {
       let comparison = 0;
 
       switch (sortField) {
-        case 'code':
-          comparison = parseInt(a.code || '0') - parseInt(b.code || '0');
+        case "code":
+          comparison = parseInt(a.code || "0") - parseInt(b.code || "0");
           break;
-        case 'date':
-          comparison = new Date(a.reservationDate).getTime() - new Date(b.reservationDate).getTime();
+        case "date":
+          comparison =
+            new Date(a.reservationDate).getTime() -
+            new Date(b.reservationDate).getTime();
           break;
-        case 'client':
-          const clientA = `${a.client?.name || ''} ${a.client?.lastName || ''}`;
-          const clientB = `${b.client?.name || ''} ${b.client?.lastName || ''}`;
+        case "client": {
+          const clientA = `${a.client?.name || ""} ${a.client?.lastName || ""}`;
+          const clientB = `${b.client?.name || ""} ${b.client?.lastName || ""}`;
           comparison = clientA.localeCompare(clientB);
           break;
-        case 'total':
+        }
+        case "total":
           comparison = (a.totalPrice || 0) - (b.totalPrice || 0);
           break;
-        case 'state':
-          comparison = (a.state || '').localeCompare(b.state || '');
+        case "state":
+          comparison = (a.state || "").localeCompare(b.state || "");
           break;
       }
 
-      return sortOrder === 'asc' ? comparison : -comparison;
+      return sortOrder === "asc" ? comparison : -comparison;
     });
 
     return filtered;
   }, [reservates, searchTerm, stateFilter, sortField, sortOrder]);
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-slate-800"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -206,31 +178,31 @@ export default function ReservateListAll() {
 
         <div className="relative container mx-auto p-6">
           {/* Header */}
-          <motion.div 
+          <motion.div
             className="mb-8"
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center justify-between mb-6">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/reservates')} 
-                className="bg-white/70 backdrop-blur-sm border-emerald-200/50 hover:bg-emerald-50/70 transition-all duration-300"
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/reservates")}
+                className="w-full sm:w-auto bg-white/70 backdrop-blur-sm border-emerald-200/50 hover:bg-emerald-50/70 transition-all duration-300"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver al menú
               </Button>
 
-              <Button 
-                onClick={() => navigate('/reservates/register')}
-                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg"
+              <Button
+                onClick={() => navigate("/reservates/register")}
+                className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Nueva Reserva
               </Button>
             </div>
-            
+
             <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-700 via-green-700 to-teal-700 bg-clip-text text-transparent mb-2">
               Lista de Reservaciones
             </h1>
@@ -279,18 +251,26 @@ export default function ReservateListAll() {
                     <Separator orientation="vertical" className="h-8" />
                     <div className="flex bg-emerald-100 rounded-lg p-1">
                       <Button
-                        variant={viewMode === 'table' ? 'default' : 'ghost'}
+                        variant={viewMode === "table" ? "default" : "ghost"}
                         size="sm"
-                        onClick={() => setViewMode('table')}
-                        className={viewMode === 'table' ? 'bg-emerald-600 text-white' : 'text-emerald-600'}
+                        onClick={() => setViewMode("table")}
+                        className={
+                          viewMode === "table"
+                            ? "bg-emerald-600 text-white"
+                            : "text-emerald-600"
+                        }
                       >
                         <List className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                        variant={viewMode === "grid" ? "default" : "ghost"}
                         size="sm"
-                        onClick={() => setViewMode('grid')}
-                        className={viewMode === 'grid' ? 'bg-emerald-600 text-white' : 'text-emerald-600'}
+                        onClick={() => setViewMode("grid")}
+                        className={
+                          viewMode === "grid"
+                            ? "bg-emerald-600 text-white"
+                            : "text-emerald-600"
+                        }
                       >
                         <Grid className="h-4 w-4" />
                       </Button>
@@ -304,20 +284,24 @@ export default function ReservateListAll() {
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-              <span className="ml-2 text-emerald-600">Cargando reservaciones...</span>
+              <span className="ml-2 text-emerald-600">
+                Cargando reservaciones...
+              </span>
             </div>
           ) : filteredAndSortedReservates.length === 0 ? (
             <Card className="text-center py-12 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-0 shadow-xl">
               <CardContent>
                 <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No se encontraron reservaciones</h3>
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                  No se encontraron reservaciones
+                </h3>
                 <p className="text-gray-500 mb-4">
-                  {searchTerm || stateFilter !== 'all' 
-                    ? 'Intenta ajustar los filtros de búsqueda' 
-                    : 'Aún no hay reservaciones registradas'}
+                  {searchTerm || stateFilter !== "all"
+                    ? "Intenta ajustar los filtros de búsqueda"
+                    : "Aún no hay reservaciones registradas"}
                 </p>
-                <Button 
-                  onClick={() => navigate('/reservates/register')}
+                <Button
+                  onClick={() => navigate("/reservates/register")}
                   className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -337,12 +321,24 @@ export default function ReservateListAll() {
                     <table className="w-full">
                       <thead className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-700 dark:to-slate-600 border-b border-emerald-200/50 dark:border-slate-600">
                         <tr>
-                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Código</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Cliente</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Fecha</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Estado</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Total</th>
-                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">Acciones</th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">
+                            Código
+                          </th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">
+                            Cliente
+                          </th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">
+                            Fecha
+                          </th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">
+                            Estado
+                          </th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">
+                            Total
+                          </th>
+                          <th className="text-left p-4 font-semibold text-emerald-700 dark:text-emerald-300">
+                            Acciones
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -362,7 +358,8 @@ export default function ReservateListAll() {
                             <td className="p-4">
                               <div>
                                 <p className="font-medium">
-                                  {reservate.client?.name} {reservate.client?.lastname}
+                                  {reservate.client?.name}{" "}
+                                  {reservate.client?.lastname}
                                 </p>
                                 <p className="text-sm text-gray-500">
                                   {reservate.client?.email}
@@ -372,33 +369,47 @@ export default function ReservateListAll() {
                             <td className="p-4">
                               <div>
                                 <p className="font-medium">
-                                  {new Date(reservate.reservationDate).toLocaleDateString('es-ES', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
+                                  {new Date(
+                                    reservate.reservationDate
+                                  ).toLocaleDateString("es-ES", {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
                                   })}
                                 </p>
                                 <p className="text-sm text-gray-500">
-                                  {new Date(reservate.reservationDate).toLocaleTimeString('es-ES', {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
+                                  {new Date(
+                                    reservate.reservationDate
+                                  ).toLocaleTimeString("es-ES", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
                                   })}
                                 </p>
                               </div>
                             </td>
                             <td className="p-4">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                reservate.state === 'completed' ? 'bg-green-100 text-green-800' :
-                                reservate.state === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                                reservate.state === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                reservate.state === 'confirmed' ? 'bg-indigo-100 text-indigo-800' :
-                                'bg-red-100 text-red-800'
-                              }`}>
-                                {reservate.state === 'completed' ? 'Completada' :
-                                 reservate.state === 'in_progress' ? 'En Progreso' :
-                                 reservate.state === 'pending' ? 'Pendiente' :
-                                 reservate.state === 'confirmed' ? 'Confirmada' :
-                                 'Cancelada'}
+                              <span
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  reservate.state === "completed"
+                                    ? "bg-green-100 text-green-800"
+                                    : reservate.state === "in_progress"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : reservate.state === "pending"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : reservate.state === "confirmed"
+                                    ? "bg-indigo-100 text-indigo-800"
+                                    : "bg-red-100 text-red-800"
+                                }`}
+                              >
+                                {reservate.state === "completed"
+                                  ? "Completada"
+                                  : reservate.state === "in_progress"
+                                  ? "En Progreso"
+                                  : reservate.state === "pending"
+                                  ? "Pendiente"
+                                  : reservate.state === "confirmed"
+                                  ? "Confirmada"
+                                  : "Cancelada"}
                               </span>
                             </td>
                             <td className="p-4">
@@ -412,8 +423,13 @@ export default function ReservateListAll() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    console.log('✏️ [LIST ALL] Navegando a editar reserva:', reservate.code);
-                                    navigate(`/reservates/update/${reservate.code}`);
+                                    console.log(
+                                      "✏️ [LIST ALL] Navegando a editar reserva:",
+                                      reservate.code
+                                    );
+                                    navigate(
+                                      `/reservates/update/${reservate.code}`
+                                    );
                                   }}
                                   className="h-8 w-8 p-0 border-emerald-200 hover:bg-emerald-50"
                                 >
@@ -422,7 +438,9 @@ export default function ReservateListAll() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => setDeleteDialog({ open: true, reservate })}
+                                  onClick={() =>
+                                    setDeleteDialog({ open: true, reservate })
+                                  }
                                   disabled
                                   title="Funcionalidad temporalmente deshabilitada"
                                   className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 text-red-600 opacity-50 cursor-not-allowed"
@@ -444,22 +462,30 @@ export default function ReservateListAll() {
       </div>
 
       {/* Delete Dialog */}
-      <Dialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open, reservate: null })}>
+      <Dialog
+        open={deleteDialog.open}
+        onOpenChange={(open) => setDeleteDialog({ open, reservate: null })}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirmar eliminación</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro de que quieres eliminar la reservación #{deleteDialog.reservate?.code}?
-              Esta acción no se puede deshacer.
+              ¿Estás seguro de que quieres eliminar la reservación #
+              {deleteDialog.reservate?.code}? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialog({ open: false, reservate: null })}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialog({ open: false, reservate: null })}
+            >
               Cancelar
             </Button>
-            <Button 
-              variant="destructive" 
-              onClick={() => deleteDialog.reservate && handleDelete(deleteDialog.reservate)}
+            <Button
+              variant="destructive"
+              onClick={() =>
+                deleteDialog.reservate && handleDelete(deleteDialog.reservate)
+              }
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Eliminar

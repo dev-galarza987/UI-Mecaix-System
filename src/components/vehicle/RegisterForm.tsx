@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -12,37 +12,49 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { vehicleService, type VehicleData } from '../../services/vehicleService';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  Car, 
-  CreditCard, 
-  Tag, 
+} from "@/components/ui/form";
+import {
+  vehicleService,
+  type VehicleData,
+} from "../../services/vehicleService";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Car,
+  CreditCard,
+  Tag,
   Calendar,
   Plus,
   AlertTriangle,
   CheckCircle,
-  Loader
-} from 'lucide-react';
+  Loader,
+} from "lucide-react";
 
 const formSchema = z.object({
-  board: z.string()
-    .min(3, { message: 'La placa debe tener al menos 3 caracteres.' })
-    .max(10, { message: 'La placa no puede tener más de 10 caracteres.' })
-    .regex(/^[A-Z0-9-]+$/, { message: 'La placa solo puede contener letras mayúsculas, números y guiones.' }),
-  brand: z.string()
-    .min(2, { message: 'La marca debe tener al menos 2 caracteres.' })
-    .max(50, { message: 'La marca no puede tener más de 50 caracteres.' }),
-  model: z.string()
-    .min(2, { message: 'El modelo debe tener al menos 2 caracteres.' })
-    .max(50, { message: 'El modelo no puede tener más de 50 caracteres.' }),
-  year: z.number()
-    .int({ message: 'El año debe ser un número entero.' })
-    .min(1900, { message: 'El año debe ser mayor a 1900.' })
-    .max(new Date().getFullYear() + 1, { message: 'El año no puede ser mayor al próximo año.' }),
+  board: z
+    .string()
+    .min(3, { message: "La placa debe tener al menos 3 caracteres." })
+    .max(10, { message: "La placa no puede tener más de 10 caracteres." })
+    .regex(/^[A-Z0-9-]+$/, {
+      message:
+        "La placa solo puede contener letras mayúsculas, números y guiones.",
+    }),
+  brand: z
+    .string()
+    .min(2, { message: "La marca debe tener al menos 2 caracteres." })
+    .max(50, { message: "La marca no puede tener más de 50 caracteres." }),
+  model: z
+    .string()
+    .min(2, { message: "El modelo debe tener al menos 2 caracteres." })
+    .max(50, { message: "El modelo no puede tener más de 50 caracteres." }),
+  year: z
+    .number()
+    .int({ message: "El año debe ser un número entero." })
+    .min(1900, { message: "El año debe ser mayor a 1900." })
+    .max(new Date().getFullYear() + 1, {
+      message: "El año no puede ser mayor al próximo año.",
+    }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -50,14 +62,14 @@ type FormData = z.infer<typeof formSchema>;
 export default function VehicleRegisterForm() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [submitError, setSubmitError] = useState<string>('');
+  const [submitError, setSubmitError] = useState<string>("");
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      board: '',
-      brand: '',
-      model: '',
+      board: "",
+      brand: "",
+      model: "",
       year: new Date().getFullYear(),
     },
   });
@@ -65,22 +77,25 @@ export default function VehicleRegisterForm() {
   async function onSubmit(values: FormData) {
     try {
       setIsLoading(true);
-      setSubmitError('');
-      
+      setSubmitError("");
+
       const vehicleData: VehicleData = {
         ...values,
-        board: values.board.toUpperCase()
+        board: values.board.toUpperCase(),
       };
-      
+
       await vehicleService.createVehicle(vehicleData);
-      
+
       // Success animation delay
       setTimeout(() => {
-        navigate('/vehicles/list');
+        navigate("/vehicles/list");
       }, 1000);
     } catch (error) {
-      console.error('Failed to create vehicle', error);
-      const errorMessage = error instanceof Error ? error.message : 'Error al crear el vehículo. Inténtalo nuevamente.';
+      console.error("Failed to create vehicle", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al crear el vehículo. Inténtalo nuevamente.";
       setSubmitError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -89,7 +104,7 @@ export default function VehicleRegisterForm() {
 
   const handleBoardInput = (value: string) => {
     // Auto-format plate to uppercase
-    return value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    return value.toUpperCase().replace(/[^A-Z0-9-]/g, "");
   };
 
   return (
@@ -105,7 +120,7 @@ export default function VehicleRegisterForm() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
         <motion.div
@@ -117,7 +132,7 @@ export default function VehicleRegisterForm() {
           transition={{
             duration: 25,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
       </div>
@@ -129,9 +144,9 @@ export default function VehicleRegisterForm() {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-4 mb-8"
         >
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/vehicles')}
+          <Button
+            variant="outline"
+            onClick={() => navigate("/vehicles")}
             className="hover:bg-cyan-50 dark:hover:bg-slate-800"
             disabled={isLoading}
           >
@@ -168,10 +183,13 @@ export default function VehicleRegisterForm() {
                 Información del Vehículo
               </CardTitle>
             </CardHeader>
-            
+
             <CardContent className="space-y-6 p-8">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Board Field */}
                     <motion.div
@@ -185,7 +203,8 @@ export default function VehicleRegisterForm() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                              Placa del Vehículo <span className="text-red-500">*</span>
+                              Placa del Vehículo{" "}
+                              <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
                               <div className="relative">
@@ -194,7 +213,9 @@ export default function VehicleRegisterForm() {
                                   placeholder="Ej: ABC-123"
                                   {...field}
                                   onChange={(e) => {
-                                    const formatted = handleBoardInput(e.target.value);
+                                    const formatted = handleBoardInput(
+                                      e.target.value
+                                    );
                                     field.onChange(formatted);
                                   }}
                                   className="pl-10 h-12 border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-cyan-500 transition-all duration-300 font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 placeholder:text-slate-500 dark:placeholder:text-slate-400"
@@ -290,7 +311,12 @@ export default function VehicleRegisterForm() {
                                   type="number"
                                   placeholder="2024"
                                   {...field}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value) || new Date().getFullYear())}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      parseInt(e.target.value) ||
+                                        new Date().getFullYear()
+                                    )
+                                  }
                                   className="pl-10 h-12 border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-cyan-500 transition-all duration-300 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400"
                                 />
                               </div>
@@ -321,18 +347,18 @@ export default function VehicleRegisterForm() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
-                    className="flex gap-4"
+                    className="flex flex-col md:flex-row gap-4"
                   >
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => navigate('/vehicles')}
+                      onClick={() => navigate("/vehicles")}
                       className="flex-1 h-14 text-lg transition-all duration-300"
                       disabled={isLoading}
                     >
                       Cancelar
                     </Button>
-                    
+
                     <motion.div
                       className="flex-1"
                       whileHover={{ scale: isLoading ? 1 : 1.02 }}
@@ -347,7 +373,11 @@ export default function VehicleRegisterForm() {
                           <div className="flex items-center gap-2">
                             <motion.div
                               animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                              transition={{
+                                duration: 1,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }}
                             >
                               <Loader className="w-5 h-5" />
                             </motion.div>
@@ -384,9 +414,16 @@ export default function VehicleRegisterForm() {
                     💡 Consejos para el registro
                   </h3>
                   <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
-                    <li>• La placa se convertirá automáticamente a mayúsculas</li>
-                    <li>• Asegúrate de ingresar el año correcto del vehículo</li>
-                    <li>• Todos los campos son obligatorios para completar el registro</li>
+                    <li>
+                      • La placa se convertirá automáticamente a mayúsculas
+                    </li>
+                    <li>
+                      • Asegúrate de ingresar el año correcto del vehículo
+                    </li>
+                    <li>
+                      • Todos los campos son obligatorios para completar el
+                      registro
+                    </li>
                     <li>• Verifica la información antes de guardar</li>
                   </ul>
                 </div>

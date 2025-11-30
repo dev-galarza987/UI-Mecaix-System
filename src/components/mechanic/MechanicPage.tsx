@@ -1,23 +1,27 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  Users, 
-  UserCheck, 
-  UserX, 
-  Clock, 
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Users,
+  UserCheck,
+  UserX,
+  Clock,
   Award,
   Plus,
   List,
   TrendingUp,
   Wrench,
   Calendar,
-  Search
-} from 'lucide-react';
-import { mechanicService, type Mechanic, type MechanicStatistics } from '../../services/mechanicService';
-import { toast } from 'sonner';
+  Search,
+} from "lucide-react";
+import {
+  mechanicService,
+  type Mechanic,
+  type MechanicStatistics,
+} from "../../services/mechanicService";
+import { toast } from "sonner";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,9 +29,9 @@ const containerVariants = {
     opacity: 1,
     transition: {
       duration: 0.6,
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const cardVariants = {
@@ -35,8 +39,8 @@ const cardVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5 }
-  }
+    transition: { duration: 0.5 },
+  },
 };
 
 export default function MechanicPage() {
@@ -51,21 +55,25 @@ export default function MechanicPage() {
         // First try to get mechanics data
         const mechanicsData = await mechanicService.getAllMechanics();
         setMechanics(mechanicsData.data || []);
-        
+
         // Try to get statistics (optional)
         try {
           const statsData = await mechanicService.getStatistics();
           setStatistics(statsData);
         } catch (statsError) {
-          console.warn('Statistics not available:', statsError);
+          console.warn("Statistics not available:", statsError);
           // Generate basic statistics from mechanics data
           const mechanicsArray = mechanicsData.data || [];
-          const activeCount = mechanicsArray.filter(m => m.status === 'active').length;
+          const activeCount = mechanicsArray.filter(
+            (m) => m.status === "active"
+          ).length;
           const inactiveCount = mechanicsArray.length - activeCount;
-          const avgExperience = mechanicsArray.length > 0 
-            ? mechanicsArray.reduce((sum, m) => sum + m.yearsExperience, 0) / mechanicsArray.length 
-            : 0;
-          
+          const avgExperience =
+            mechanicsArray.length > 0
+              ? mechanicsArray.reduce((sum, m) => sum + m.yearsExperience, 0) /
+                mechanicsArray.length
+              : 0;
+
           setStatistics({
             totalMechanics: mechanicsArray.length,
             activeMechanics: activeCount,
@@ -76,13 +84,13 @@ export default function MechanicPage() {
               junior: 0,
               senior: 0,
               expert: 0,
-              master: 0
-            }
+              master: 0,
+            },
           });
         }
       } catch (error) {
-        console.error('Error fetching mechanics data:', error);
-        toast.error('Error al cargar los datos de mecánicos');
+        console.error("Error fetching mechanics data:", error);
+        toast.error("Error al cargar los datos de mecánicos");
         setMechanics([]);
         setStatistics({
           totalMechanics: 0,
@@ -94,8 +102,8 @@ export default function MechanicPage() {
             junior: 0,
             senior: 0,
             expert: 0,
-            master: 0
-          }
+            master: 0,
+          },
         });
       } finally {
         setLoading(false);
@@ -141,28 +149,28 @@ export default function MechanicPage() {
       title: "Nuevo Mecánico",
       description: "Agregar un nuevo mecánico al sistema",
       icon: Plus,
-      action: () => navigate('/mechanics/create'),
+      action: () => navigate("/mechanics/create"),
       color: "from-emerald-500 to-teal-600",
     },
     {
       title: "Lista de Mecánicos",
       description: "Ver y gestionar todos los mecánicos",
       icon: List,
-      action: () => navigate('/mechanics/list'),
+      action: () => navigate("/mechanics/list"),
       color: "from-blue-500 to-indigo-600",
     },
     {
       title: "Buscar Mecánico",
       description: "Buscar mecánicos por especialidad o código",
       icon: Search,
-      action: () => navigate('/mechanics/search'),
+      action: () => navigate("/mechanics/search"),
       color: "from-purple-500 to-violet-600",
     },
     {
       title: "Horarios",
       description: "Gestionar horarios de trabajo",
       icon: Calendar,
-      action: () => navigate('/mechanics/schedules'),
+      action: () => navigate("/mechanics/schedules"),
       color: "from-orange-500 to-red-600",
     },
   ];
@@ -183,7 +191,7 @@ export default function MechanicPage() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800"
       variants={containerVariants}
       initial="hidden"
@@ -199,15 +207,13 @@ export default function MechanicPage() {
 
         <div className="relative container mx-auto p-6">
           {/* Header */}
-          <motion.div 
-            className="text-center mb-12"
-            variants={cardVariants}
-          >
+          <motion.div className="text-center mb-12" variants={cardVariants}>
             <h1 className="text-6xl font-bold bg-gradient-to-r from-slate-600 via-blue-600 to-indigo-700 dark:from-slate-400 dark:via-blue-400 dark:to-indigo-300 bg-clip-text text-transparent mb-4">
               Gestión de Mecánicos
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Sistema completo para gestionar tu equipo de mecánicos profesionales
+              Sistema completo para gestionar tu equipo de mecánicos
+              profesionales
             </p>
             <div className="flex items-center justify-center mt-4">
               <Wrench className="h-8 w-8 text-blue-600 dark:text-blue-400 mr-3" />
@@ -232,8 +238,12 @@ export default function MechanicPage() {
                           {stat.value}
                         </p>
                       </div>
-                      <div className={`w-16 h-16 bg-gradient-to-br ${stat.bgColor} dark:from-slate-700 dark:to-slate-600 rounded-2xl flex items-center justify-center shadow-lg`}>
-                        <stat.icon className={`h-8 w-8 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`} />
+                      <div
+                        className={`w-16 h-16 bg-gradient-to-br ${stat.bgColor} dark:from-slate-700 dark:to-slate-600 rounded-2xl flex items-center justify-center shadow-lg`}
+                      >
+                        <stat.icon
+                          className={`h-8 w-8 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}
+                        />
                       </div>
                     </div>
                   </CardContent>
@@ -254,7 +264,7 @@ export default function MechanicPage() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {quickActions.map((action, index) => (
-                    <motion.div 
+                    <motion.div
                       key={index}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -264,7 +274,9 @@ export default function MechanicPage() {
                         className={`w-full h-auto p-6 bg-gradient-to-br ${action.color} hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-center text-white border-0`}
                       >
                         <action.icon className="h-8 w-8 mb-3" />
-                        <span className="font-semibold text-sm mb-1">{action.title}</span>
+                        <span className="font-semibold text-sm mb-1">
+                          {action.title}
+                        </span>
                         <span className="text-xs opacity-90 text-center leading-tight">
                           {action.description}
                         </span>
@@ -289,36 +301,42 @@ export default function MechanicPage() {
                 {recentMechanics.length > 0 ? (
                   <div className="space-y-4">
                     {recentMechanics.map((mechanic) => (
-                      <div 
+                      <div
                         key={mechanic.id}
-                        className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200"
+                        className="flex flex-col sm:flex-row items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200 gap-4"
                       >
                         <div className="flex items-center">
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                            {mechanic.firstName[0]}{mechanic.lastName[0]}
+                            {mechanic.firstName[0]}
+                            {mechanic.lastName[0]}
                           </div>
                           <div>
                             <p className="font-semibold text-slate-800 dark:text-slate-200">
                               {mechanic.firstName} {mechanic.lastName}
                             </p>
                             <p className="text-sm text-slate-600 dark:text-slate-400">
-                              {mechanic.employeeCode} • {mechanic.experienceLevel}
+                              {mechanic.employeeCode} •{" "}
+                              {mechanic.experienceLevel}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            mechanic.status === 'active' 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                          }`}>
-                            {mechanic.status === 'active' ? 'Activo' : 'Inactivo'}
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              mechanic.status === "active"
+                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                            }`}
+                          >
+                            {mechanic.status === "active"
+                              ? "Activo"
+                              : "Inactivo"}
                           </span>
                         </div>
                       </div>
                     ))}
                     <Button
-                      onClick={() => navigate('/mechanics/list')}
+                      onClick={() => navigate("/mechanics/list")}
                       variant="outline"
                       className="w-full mt-4 border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
                     >
@@ -332,7 +350,7 @@ export default function MechanicPage() {
                       No hay mecánicos registrados
                     </p>
                     <Button
-                      onClick={() => navigate('/mechanics/create')}
+                      onClick={() => navigate("/mechanics/create")}
                       className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white"
                     >
                       <Plus className="h-4 w-4 mr-2" />
