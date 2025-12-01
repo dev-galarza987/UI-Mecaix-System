@@ -195,7 +195,7 @@ export default function ReservateListAll() {
               </Button>
 
               <Button
-                onClick={() => navigate("/reservates/register")}
+                onClick={() => navigate("/reservates/new")}
                 className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg"
               >
                 <Plus className="h-4 w-4 mr-2" />
