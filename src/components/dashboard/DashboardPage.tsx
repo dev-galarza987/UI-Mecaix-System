@@ -1,34 +1,29 @@
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { GlowingCard, StatusIndicator } from '@/components/ui/animated-components';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  GlowingCard,
+  StatusIndicator,
+} from "@/components/ui/animated-components";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Area, AreaChart, XAxis, YAxis, PieChart, Pie, Cell } from "recharts";
 import {
-  Area,
-  AreaChart,
-  XAxis,
-  YAxis,
-  PieChart,
-  Pie,
-  Cell
-} from "recharts";
-import { 
-  Users, 
-  Car, 
-  Wrench, 
-  CalendarCheck, 
-  TrendingUp, 
+  Users,
+  Car,
+  Wrench,
+  CalendarCheck,
+  TrendingUp,
   Clock,
   Settings,
-  BarChart3
-} from 'lucide-react';
+  BarChart3,
+} from "lucide-react";
 
 const modules = [
   {
@@ -38,59 +33,62 @@ const modules = [
     icon: <Users className="w-8 h-8" />,
     color: "from-blue-500 to-blue-600",
     stats: "150+ Clientes",
-    trend: "+12% este mes"
+    trend: "+12% este mes",
   },
   {
     title: "Gestión de Vehículos",
-    description: "Gestionar todas las operaciones relacionadas con el vehículo.",
+    description:
+      "Gestionar todas las operaciones relacionadas con el vehículo.",
     path: "/vehicles",
     icon: <Car className="w-8 h-8" />,
     color: "from-green-500 to-green-600",
     stats: "89 Vehículos",
-    trend: "+5% esta semana"
+    trend: "+5% esta semana",
   },
   {
     title: "Gestión de Servicios",
-    description: "Gestionar todas las operaciones relacionadas con el servicio.",
+    description:
+      "Gestionar todas las operaciones relacionadas con el servicio.",
     path: "/services",
     icon: <Wrench className="w-8 h-8" />,
     color: "from-purple-500 to-purple-600",
     stats: "25 Servicios",
-    trend: "Activos"
+    trend: "Activos",
   },
   {
     title: "Gestión de Reservaciones",
-    description: "Gestionar todas las operaciones relacionadas con la reservación.",
+    description:
+      "Gestionar todas las operaciones relacionadas con la reservación.",
     path: "/reservates",
     icon: <CalendarCheck className="w-8 h-8" />,
     color: "from-orange-500 to-orange-600",
     stats: "32 Pendientes",
-    trend: "+8 hoy"
+    trend: "+8 hoy",
   },
 ];
 
 const quickStats = [
   {
     title: "Ingresos del Mes",
-    value: "$24,580",
+    value: "Bs.24.580",
     change: "+15.3%",
     icon: <TrendingUp className="w-5 h-5" />,
-    color: "text-green-600"
+    color: "text-green-600",
   },
   {
     title: "Servicios Completados",
     value: "143",
     change: "+8.2%",
     icon: <BarChart3 className="w-5 h-5" />,
-    color: "text-blue-600"
+    color: "text-blue-600",
   },
   {
     title: "Tiempo Promedio",
     value: "2.4h",
     change: "-12%",
     icon: <Clock className="w-5 h-5" />,
-    color: "text-purple-600"
-  }
+    color: "text-purple-600",
+  },
 ];
 
 // Datos para los gráficos
@@ -127,9 +125,9 @@ const containerVariants = {
     opacity: 1,
     transition: {
       delayChildren: 0.2,
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const itemVariants = {
@@ -140,22 +138,22 @@ const itemVariants = {
     transition: {
       type: "spring" as const,
       stiffness: 100,
-      damping: 15
-    }
-  }
+      damping: 15,
+    },
+  },
 };
 
 const cardHoverVariants = {
   initial: { scale: 1, y: 0 },
-  hover: { 
+  hover: {
     scale: 1.03,
     y: -5,
     transition: {
       type: "spring" as const,
       stiffness: 400,
-      damping: 25
-    }
-  }
+      damping: 25,
+    },
+  },
 };
 
 export function DashboardPage() {
@@ -163,27 +161,24 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30 dark:from-slate-900/50 dark:via-slate-800/30 dark:to-slate-900/50">
-      <motion.div 
+      <motion.div
         className="container mx-auto p-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Header Section */}
-        <motion.div 
-          className='text-center mb-12'
-          variants={itemVariants}
-        >
-          <motion.h1 
-            className='text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 dark:from-blue-400 dark:via-purple-400 dark:to-blue-300 bg-clip-text text-transparent mb-4'
+        <motion.div className="text-center mb-12" variants={itemVariants}>
+          <motion.h1
+            className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 dark:from-blue-400 dark:via-purple-400 dark:to-blue-300 bg-clip-text text-transparent mb-4"
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, type: "spring" as const, stiffness: 120 }}
           >
             Panel de Control Mecanix
           </motion.h1>
-          <motion.p 
-            className='text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto'
+          <motion.p
+            className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -193,7 +188,7 @@ export function DashboardPage() {
         </motion.div>
 
         {/* Quick Stats */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
           variants={itemVariants}
         >
@@ -204,21 +199,37 @@ export function DashboardPage() {
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <GlowingCard glowColor={`rgba(${index === 0 ? '59, 130, 246' : index === 1 ? '34, 197, 94' : '168, 85, 247'}, 0.3)`}>
+              <GlowingCard
+                glowColor={`rgba(${
+                  index === 0
+                    ? "59, 130, 246"
+                    : index === 1
+                    ? "34, 197, 94"
+                    : "168, 85, 247"
+                }, 0.3)`}
+              >
                 <CardContent className="p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{stat.title}</p>
-                      <motion.p 
+                      <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
+                        {stat.title}
+                      </p>
+                      <motion.p
                         className="text-3xl font-bold text-slate-900 dark:text-white"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ delay: 0.5 + index * 0.1, type: "spring" as const, stiffness: 200 }}
+                        transition={{
+                          delay: 0.5 + index * 0.1,
+                          type: "spring" as const,
+                          stiffness: 200,
+                        }}
                       >
                         {stat.value}
                       </motion.p>
                       <StatusIndicator status="online">
-                        <p className={`text-sm ${stat.color} flex items-center gap-1 mt-2`}>
+                        <p
+                          className={`text-sm ${stat.color} flex items-center gap-1 mt-2`}
+                        >
                           {stat.icon}
                           <motion.span
                             initial={{ opacity: 0, x: -10 }}
@@ -232,18 +243,24 @@ export function DashboardPage() {
                     </div>
                     <motion.div
                       className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                        index === 0 ? 'bg-blue-100 dark:bg-blue-900/30' :
-                        index === 1 ? 'bg-green-100 dark:bg-green-900/30' :
-                        'bg-purple-100 dark:bg-purple-900/30'
+                        index === 0
+                          ? "bg-blue-100 dark:bg-blue-900/30"
+                          : index === 1
+                          ? "bg-green-100 dark:bg-green-900/30"
+                          : "bg-purple-100 dark:bg-purple-900/30"
                       }`}
                       whileHover={{ rotate: 15 }}
                       transition={{ type: "spring" as const, stiffness: 300 }}
                     >
-                      <div className={`${
-                        index === 0 ? 'text-blue-600' :
-                        index === 1 ? 'text-green-600' :
-                        'text-purple-600'
-                      }`}>
+                      <div
+                        className={`${
+                          index === 0
+                            ? "text-blue-600"
+                            : index === 1
+                            ? "text-green-600"
+                            : "text-purple-600"
+                        }`}
+                      >
                         {stat.icon}
                       </div>
                     </motion.div>
@@ -255,7 +272,7 @@ export function DashboardPage() {
         </motion.div>
 
         {/* Charts Section */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8"
           variants={containerVariants}
         >
@@ -285,19 +302,22 @@ export function DashboardPage() {
                       bottom: 5,
                     }}
                   >
-                    <XAxis 
-                      dataKey="month" 
+                    <XAxis
+                      dataKey="month"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
+                      tick={{ fill: "var(--color-text-muted)", fontSize: 12 }}
                     />
                     <YAxis hide />
                     <ChartTooltip
                       cursor={false}
                       content={
-                        <ChartTooltipContent 
-                          className="w-40" 
-                          formatter={(value) => [`$${value.toLocaleString()}`, "Ingresos"]}
+                        <ChartTooltipContent
+                          className="w-40"
+                          formatter={(value) => [
+                            `$${value.toLocaleString()}`,
+                            "Ingresos",
+                          ]}
                         />
                       }
                     />
@@ -309,9 +329,23 @@ export function DashboardPage() {
                       fill="url(#revenueGradient)"
                     />
                     <defs>
-                      <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05}/>
+                      <linearGradient
+                        id="revenueGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0.05}
+                        />
                       </linearGradient>
                     </defs>
                   </AreaChart>
@@ -352,22 +386,25 @@ export function DashboardPage() {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <ChartTooltip 
+                      <ChartTooltip
                         content={
-                          <ChartTooltipContent 
+                          <ChartTooltipContent
                             formatter={(value) => [`${value}%`, "Porcentaje"]}
                           />
-                        } 
+                        }
                       />
                     </PieChart>
                   </ChartContainer>
                 </div>
                 <div className="mt-6 space-y-3">
                   {serviceDistribution.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
+                        <div
+                          className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: item.color }}
                         />
                         <span className="text-sm text-slate-600 dark:text-slate-400">
@@ -386,7 +423,7 @@ export function DashboardPage() {
         </motion.div>
 
         {/* Main Modules Grid */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8"
           variants={containerVariants}
         >
@@ -399,17 +436,17 @@ export function DashboardPage() {
             >
               <motion.div variants={cardHoverVariants}>
                 <Card className="h-full border-0 shadow-xl overflow-hidden bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
-                  <motion.div 
+                  <motion.div
                     className={`h-2 bg-gradient-to-r ${module.color}`}
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ delay: 0.5 + index * 0.1, duration: 0.6 }}
                   />
-                  
+
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <motion.div 
+                        <motion.div
                           className={`p-3 rounded-full bg-gradient-to-r ${module.color} text-white shadow-lg`}
                           whileHover={{ rotate: 360, scale: 1.1 }}
                           transition={{ duration: 0.6 }}
@@ -417,9 +454,14 @@ export function DashboardPage() {
                           {module.icon}
                         </motion.div>
                         <div>
-                          <CardTitle className="text-xl text-slate-900 dark:text-white">{module.title}</CardTitle>
+                          <CardTitle className="text-xl text-slate-900 dark:text-white">
+                            {module.title}
+                          </CardTitle>
                           <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="secondary" className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                            >
                               {module.stats}
                             </Badge>
                             <span className="text-xs text-green-600 dark:text-green-400 font-medium">
@@ -436,15 +478,16 @@ export function DashboardPage() {
                       </motion.div>
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent className="pt-0">
                     <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                       {module.description}
-                    </p>                    <motion.div
+                    </p>{" "}
+                    <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Button 
+                      <Button
                         onClick={() => navigate(module.path)}
                         className={`w-full bg-gradient-to-r ${module.color} border-0 text-white shadow-lg hover:shadow-xl transition-all duration-300`}
                         size="lg"
@@ -466,7 +509,7 @@ export function DashboardPage() {
         </motion.div>
 
         {/* Footer */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-12 mb-8"
           variants={containerVariants}
         >
@@ -475,51 +518,67 @@ export function DashboardPage() {
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Sistema</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    Sistema
+                  </span>
                 </div>
-                <p className="text-lg font-semibold text-green-600 dark:text-green-400">Operativo</p>
+                <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                  Operativo
+                </p>
               </CardContent>
             </Card>
           </motion.div>
-          
+
           <motion.div variants={itemVariants}>
             <Card className="border-0 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">API</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    API
+                  </span>
                 </div>
-                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">Conectado</p>
+                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  Conectado
+                </p>
               </CardContent>
             </Card>
           </motion.div>
-          
+
           <motion.div variants={itemVariants}>
             <Card className="border-0 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Base de Datos</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    Base de Datos
+                  </span>
                 </div>
-                <p className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">Simulado</p>
+                <p className="text-lg font-semibold text-yellow-600 dark:text-yellow-400">
+                  Simulado
+                </p>
               </CardContent>
             </Card>
           </motion.div>
-          
+
           <motion.div variants={itemVariants}>
             <Card className="border-0 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Respaldos</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    Respaldos
+                  </span>
                 </div>
-                <p className="text-lg font-semibold text-purple-600 dark:text-purple-400">Activo</p>
+                <p className="text-lg font-semibold text-purple-600 dark:text-purple-400">
+                  Activo
+                </p>
               </CardContent>
             </Card>
           </motion.div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="text-center mt-8 pt-8 border-t border-slate-200 dark:border-slate-700"
           variants={itemVariants}
           initial={{ opacity: 0 }}
@@ -527,7 +586,8 @@ export function DashboardPage() {
           transition={{ delay: 1 }}
         >
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            © 2025 Mecanix UI System - Sistema de gestión para talleres mecánicos
+            © 2025 Mecanix UI System - Sistema de gestión para talleres
+            mecánicos
           </p>
         </motion.div>
       </motion.div>

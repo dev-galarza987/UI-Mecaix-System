@@ -57,7 +57,7 @@ export function RegisterForm() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              Nueva Reserva (Refactored)
+              Nueva Reserva
             </h1>
             <p className="text-slate-500 dark:text-slate-400">
               Complete el formulario para registrar una nueva reserva.

@@ -1,32 +1,46 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Edit, 
-  Trash2, 
-  Plus, 
-  Search, 
-  Grid3X3, 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Edit,
+  Trash2,
+  Plus,
+  Search,
+  Grid3X3,
   List,
   Wrench,
-  Eye
-} from 'lucide-react';
-import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { serviceService, type Service } from '../../services/serviceService';
+  Eye,
+} from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { serviceService, type Service } from "../../services/serviceService";
 
 export default function ListAll() {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState<'code' | 'title' | 'price'>('code');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [priceRange, setPriceRange] = useState<'all' | 'low' | 'medium' | 'high'>('all');
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState<"code" | "title" | "price">("code");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [priceRange, setPriceRange] = useState<
+    "all" | "low" | "medium" | "high"
+  >("all");
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,22 +48,25 @@ export default function ListAll() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        console.log('📋 [SERVICE LIST] Iniciando carga de servicios...');
+        console.log("📋 [SERVICE LIST] Iniciando carga de servicios...");
         setLoading(true);
         const data = await serviceService.getAllServices();
-        console.log('📋 [SERVICE LIST] Datos recibidos:', data);
-        console.log('📋 [SERVICE LIST] Tipo de datos:', typeof data);
-        console.log('📋 [SERVICE LIST] Es array?:', Array.isArray(data));
+        console.log("📋 [SERVICE LIST] Datos recibidos:", data);
+        console.log("📋 [SERVICE LIST] Tipo de datos:", typeof data);
+        console.log("📋 [SERVICE LIST] Es array?:", Array.isArray(data));
         if (Array.isArray(data) && data.length > 0) {
-          console.log('📋 [SERVICE LIST] Primer servicio completo:', data[0]);
-          console.log('📋 [SERVICE LIST] Code del primer servicio:', data[0].code);
-          console.log('📋 [SERVICE LIST] ID del primer servicio:', data[0].id);
+          console.log("📋 [SERVICE LIST] Primer servicio completo:", data[0]);
+          console.log(
+            "📋 [SERVICE LIST] Code del primer servicio:",
+            data[0].code
+          );
+          console.log("📋 [SERVICE LIST] ID del primer servicio:", data[0].id);
         }
         setServices(data);
         setError(null);
       } catch (err) {
-        console.error('❌ [SERVICE LIST] Error al cargar servicios:', err);
-        setError('Failed to fetch services.');
+        console.error("❌ [SERVICE LIST] Error al cargar servicios:", err);
+        setError("Failed to fetch services.");
       } finally {
         setLoading(false);
       }
@@ -59,24 +76,29 @@ export default function ListAll() {
 
   const categories = useMemo(() => {
     // Como la API no tiene categorías, las removemos por ahora
-    return ['all'];
+    return ["all"];
   }, []);
 
   const filteredServices = useMemo(() => {
-    const filtered = services.filter(service => {
-      const matchesSearch = 
-        service.code.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const filtered = services.filter((service) => {
+      const matchesSearch =
+        service.code
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         service.description.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       // Solo filtro por categoría si fuera 'all' ya que no tenemos categorías
-      const matchesCategory = selectedCategory === 'all';
-      
-      const matchesPriceRange = 
-        priceRange === 'all' ||
-        (priceRange === 'low' && service.price < 50) ||
-        (priceRange === 'medium' && service.price >= 50 && service.price < 150) ||
-        (priceRange === 'high' && service.price >= 150);
+      const matchesCategory = selectedCategory === "all";
+
+      const matchesPriceRange =
+        priceRange === "all" ||
+        (priceRange === "low" && service.price < 50) ||
+        (priceRange === "medium" &&
+          service.price >= 50 &&
+          service.price < 150) ||
+        (priceRange === "high" && service.price >= 150);
 
       return matchesSearch && matchesCategory && matchesPriceRange;
     });
@@ -85,22 +107,22 @@ export default function ListAll() {
     filtered.sort((a, b) => {
       const aValue = a[sortBy];
       const bValue = b[sortBy];
-      
+
       // Handle undefined values
       if (aValue === undefined && bValue === undefined) return 0;
       if (aValue === undefined) return 1;
       if (bValue === undefined) return -1;
-      
+
       // Compare values
       let compareA: string | number = aValue;
       let compareB: string | number = bValue;
-      
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
+
+      if (typeof aValue === "string" && typeof bValue === "string") {
         compareA = aValue.toLowerCase();
         compareB = bValue.toLowerCase();
       }
-      
-      if (sortOrder === 'asc') {
+
+      if (sortOrder === "asc") {
         return compareA < compareB ? -1 : compareA > compareB ? 1 : 0;
       } else {
         return compareA > compareB ? -1 : compareA < compareB ? 1 : 0;
@@ -113,10 +135,10 @@ export default function ListAll() {
   const handleDelete = async (id: number) => {
     try {
       await serviceService.deleteService(id);
-      setServices(services.filter(service => service.id !== id));
+      setServices(services.filter((service) => service.id !== id));
     } catch (err) {
-      console.error('Error al eliminar servicio:', err);
-      setError('Error al eliminar el servicio.');
+      console.error("Error al eliminar servicio:", err);
+      setError("Error al eliminar el servicio.");
     }
   };
 
@@ -125,7 +147,9 @@ export default function ListAll() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-lg text-slate-600 dark:text-slate-400">Cargando servicios...</p>
+          <p className="text-lg text-slate-600 dark:text-slate-400">
+            Cargando servicios...
+          </p>
         </div>
       </div>
     );
@@ -155,7 +179,7 @@ export default function ListAll() {
           transition={{
             duration: 25,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
         <motion.div
@@ -167,7 +191,7 @@ export default function ListAll() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
       </div>
@@ -203,7 +227,7 @@ export default function ListAll() {
           >
             <Button
               variant="outline"
-              onClick={() => navigate('/services')}
+              onClick={() => navigate("/services")}
               className="hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               ← Regresar
@@ -213,10 +237,14 @@ export default function ListAll() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant={viewMode === 'table' ? 'default' : 'outline'}
+                    variant={viewMode === "table" ? "default" : "outline"}
                     size="icon"
-                    onClick={() => setViewMode('table')}
-                    className={viewMode === 'table' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+                    onClick={() => setViewMode("table")}
+                    className={
+                      viewMode === "table"
+                        ? "bg-purple-600 hover:bg-purple-700"
+                        : ""
+                    }
                   >
                     <List className="h-4 w-4" />
                   </Button>
@@ -229,10 +257,14 @@ export default function ListAll() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant={viewMode === 'grid' ? 'default' : 'outline'}
+                    variant={viewMode === "grid" ? "default" : "outline"}
                     size="icon"
-                    onClick={() => setViewMode('grid')}
-                    className={viewMode === 'grid' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+                    onClick={() => setViewMode("grid")}
+                    className={
+                      viewMode === "grid"
+                        ? "bg-purple-600 hover:bg-purple-700"
+                        : ""
+                    }
                   >
                     <Grid3X3 className="h-4 w-4" />
                   </Button>
@@ -242,7 +274,7 @@ export default function ListAll() {
             </TooltipProvider>
 
             <Button
-              onClick={() => navigate('/services/new')}
+              onClick={() => navigate("/services/new")}
               className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -281,30 +313,34 @@ export default function ListAll() {
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-purple-500"
                   >
-                    {categories.map(category => (
+                    {categories.map((category) => (
                       <option key={category} value={category}>
-                        {category === 'all' ? 'Todas las categorías' : category}
+                        {category === "all" ? "Todas las categorías" : category}
                       </option>
                     ))}
                   </select>
 
                   <select
                     value={priceRange}
-                    onChange={(e) => setPriceRange(e.target.value as 'all' | 'low' | 'medium' | 'high')}
+                    onChange={(e) =>
+                      setPriceRange(
+                        e.target.value as "all" | "low" | "medium" | "high"
+                      )
+                    }
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="all">Todos los precios</option>
-                    <option value="low">Hasta $50</option>
-                    <option value="medium">$50 - $150</option>
-                    <option value="high">Más de $150</option>
+                    <option value="low">Hasta Bs.50</option>
+                    <option value="medium">Bs.50 - Bs.150</option>
+                    <option value="high">Más de Bs.150</option>
                   </select>
 
                   <select
                     value={`${sortBy}-${sortOrder}`}
                     onChange={(e) => {
-                      const [field, order] = e.target.value.split('-');
-                      setSortBy(field as 'code' | 'title' | 'price');
-                      setSortOrder(order as 'asc' | 'desc');
+                      const [field, order] = e.target.value.split("-");
+                      setSortBy(field as "code" | "title" | "price");
+                      setSortOrder(order as "asc" | "desc");
                     }}
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-purple-500"
                   >
@@ -324,7 +360,7 @@ export default function ListAll() {
 
         {/* Content */}
         <AnimatePresence mode="wait">
-          {viewMode === 'table' ? (
+          {viewMode === "table" ? (
             <motion.div
               key="table"
               initial={{ opacity: 0, y: 20 }}
@@ -338,9 +374,13 @@ export default function ListAll() {
                     <TableHeader className="bg-gradient-to-r from-purple-500/10 to-violet-500/10">
                       <TableRow>
                         <TableHead className="font-semibold">Código</TableHead>
-                        <TableHead className="font-semibold">Servicio</TableHead>
+                        <TableHead className="font-semibold">
+                          Servicio
+                        </TableHead>
                         <TableHead className="font-semibold">Precio</TableHead>
-                        <TableHead className="font-semibold">Acciones</TableHead>
+                        <TableHead className="font-semibold">
+                          Acciones
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -364,7 +404,7 @@ export default function ListAll() {
                             </div>
                           </TableCell>
                           <TableCell className="font-bold text-green-600">
-                            ${service.price.toFixed(2)}
+                            Bs.{service.price.toFixed(2)}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
@@ -375,7 +415,9 @@ export default function ListAll() {
                                       variant="outline"
                                       size="icon"
                                       className="h-8 w-8 hover:bg-blue-50 hover:border-blue-300"
-                                      onClick={() => navigate(`/services/${service.id}`)}
+                                      onClick={() =>
+                                        navigate(`/services/${service.id}`)
+                                      }
                                     >
                                       <Eye className="h-4 w-4" />
                                     </Button>
@@ -391,12 +433,18 @@ export default function ListAll() {
                                       variant="outline"
                                       size="icon"
                                       className="h-8 w-8 hover:bg-amber-50 hover:border-amber-300"
-                                      onClick={() => navigate(`/services/update/${service.id}`)}
+                                      onClick={() =>
+                                        navigate(
+                                          `/services/update/${service.id}`
+                                        )
+                                      }
                                     >
                                       <Edit className="h-4 w-4" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>Editar servicio</TooltipContent>
+                                  <TooltipContent>
+                                    Editar servicio
+                                  </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
 
@@ -412,7 +460,9 @@ export default function ListAll() {
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>Eliminar servicio</TooltipContent>
+                                  <TooltipContent>
+                                    Eliminar servicio
+                                  </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
                             </div>
@@ -445,7 +495,10 @@ export default function ListAll() {
                   <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg hover:shadow-purple-500/20 transition-all duration-300 h-full">
                     <CardHeader className="pb-4">
                       <div className="flex justify-between items-start mb-2">
-                        <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs">
+                        <Badge
+                          variant="secondary"
+                          className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs"
+                        >
                           {service.code}
                         </Badge>
                       </div>
@@ -460,9 +513,11 @@ export default function ListAll() {
 
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">Precio:</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                            Precio:
+                          </span>
                           <span className="font-bold text-lg text-green-600">
-                            ${service.price.toFixed(2)}
+                            Bs.{service.price.toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -481,7 +536,9 @@ export default function ListAll() {
                           variant="outline"
                           size="sm"
                           className="flex-1 hover:bg-amber-50 hover:border-amber-300"
-                          onClick={() => navigate(`/services/update/${service.id}`)}
+                          onClick={() =>
+                            navigate(`/services/update/${service.id}`)
+                          }
                         >
                           <Edit className="h-4 w-4 mr-1" />
                           Editar
@@ -519,17 +576,18 @@ export default function ListAll() {
                   No se encontraron servicios
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400 mb-4">
-                  Intenta ajustar los filtros de búsqueda o crear un nuevo servicio
+                  Intenta ajustar los filtros de búsqueda o crear un nuevo
+                  servicio
                 </p>
-                <Button 
-                  onClick={() => setSearchTerm('')}
+                <Button
+                  onClick={() => setSearchTerm("")}
                   variant="outline"
                   className="mr-2"
                 >
                   Limpiar filtros
                 </Button>
                 <Button
-                  onClick={() => navigate('/services/new')}
+                  onClick={() => navigate("/services/new")}
                   className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
                 >
                   <Plus className="h-4 w-4 mr-2" />

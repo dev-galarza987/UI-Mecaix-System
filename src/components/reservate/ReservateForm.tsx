@@ -486,7 +486,7 @@ export function ReservateForm({
                               {service.description}
                             </p>
                             <p className="text-sm font-bold text-blue-600 mt-2">
-                              ${service.price}
+                              Bs.{service.price}
                             </p>
                           </div>
                         </div>
@@ -511,7 +511,7 @@ export function ReservateForm({
               <div className="flex justify-between items-center p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
                 <span className="font-medium">Total Estimado:</span>
                 <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  ${form.watch("totalPrice").toFixed(2)}
+                  Bs.{form.watch("totalPrice").toFixed(2)}
                 </span>
               </div>
 

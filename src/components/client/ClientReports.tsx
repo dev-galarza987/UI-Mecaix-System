@@ -326,12 +326,12 @@ export function ClientReports({
           </div>
         )}
 
-        <div className="flex justify-end mt-4">
+        {/*<div className="flex justify-end mt-4">
           <Button variant="outline" className="gap-2">
             <Download className="h-4 w-4" />
             Exportar PDF
           </Button>
-        </div>
+        </div>*/}
       </DialogContent>
     </Dialog>
   );

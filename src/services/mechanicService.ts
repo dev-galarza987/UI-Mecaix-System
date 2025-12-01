@@ -672,8 +672,71 @@ export const mechanicService = {
 
   // Estadísticas
   getStatistics: async (): Promise<MechanicStatistics> => {
-    const response = await apiClient.get(`${API_BASE_URL}/statistics`);
-    return response.data;
+    console.log("📊 [MECHANIC SERVICE] Solicitando estadísticas...");
+    try {
+      const response = await apiClient.get(`${API_BASE_URL}/statistics`);
+      console.log(
+        "📊 [MECHANIC SERVICE] Respuesta de estadísticas:",
+        response.data
+      );
+
+      // Manejar diferentes estructuras de respuesta
+      let statsData = response.data;
+
+      // Si está envuelto en 'data' o 'statistics'
+      if (statsData.data) statsData = statsData.data;
+      else if (statsData.statistics) statsData = statsData.statistics;
+
+      // Validar que tenga los campos requeridos (o al menos algunos)
+      if (typeof statsData === "object" && statsData !== null) {
+        // Mapeo flexible de propiedades
+        const mappedStats: MechanicStatistics = {
+          totalMechanics:
+            statsData.totalMechanics ?? statsData.total ?? statsData.count ?? 0,
+          activeMechanics:
+            statsData.activeMechanics ??
+            statsData.active ??
+            statsData.activeCount ??
+            0,
+          inactiveMechanics:
+            statsData.inactiveMechanics ??
+            statsData.inactive ??
+            statsData.inactiveCount ??
+            0,
+          averageExperience:
+            statsData.averageExperience ??
+            statsData.avgExperience ??
+            statsData.average_experience ??
+            0,
+          experienceLevelDistribution: statsData.experienceLevelDistribution ??
+            statsData.distribution ?? {
+              trainee: 0,
+              junior: 0,
+              senior: 0,
+              expert: 0,
+              master: 0,
+            },
+        };
+
+        console.log(
+          "📊 [MECHANIC SERVICE] Estadísticas mapeadas:",
+          mappedStats
+        );
+        return mappedStats;
+      }
+
+      console.warn(
+        "⚠️ [MECHANIC SERVICE] Formato de estadísticas inesperado:",
+        statsData
+      );
+      throw new Error("Formato de respuesta inválido");
+    } catch (error) {
+      console.error(
+        "❌ [MECHANIC SERVICE] Error al obtener estadísticas:",
+        error
+      );
+      throw error;
+    }
   },
 
   // Disponibilidad y filtros

@@ -59,9 +59,27 @@ export default function MechanicPage() {
         // Try to get statistics (optional)
         try {
           const statsData = await mechanicService.getStatistics();
+
+          // Fallback inteligente: Si la API devuelve 0 mecánicos pero tenemos mecánicos en la lista,
+          // usar el cálculo local. Esto corrige el caso donde la API devuelve datos parciales o incorrectos.
+          if (
+            statsData.totalMechanics === 0 &&
+            mechanicsData.data &&
+            mechanicsData.data.length > 0
+          ) {
+            console.warn(
+              "⚠️ Estadísticas de API parecen vacías pero hay mecánicos. Usando cálculo local."
+            );
+            toast.warning(
+              "Usando estadísticas calculadas localmente (Datos de API inconsistentes)"
+            );
+            throw new Error("Datos de API inconsistentes");
+          }
+
           setStatistics(statsData);
+          toast.success("Estadísticas cargadas desde API");
         } catch (statsError) {
-          console.warn("Statistics not available:", statsError);
+          console.warn("Statistics not available or invalid:", statsError);
           // Generate basic statistics from mechanics data
           const mechanicsArray = mechanicsData.data || [];
           const activeCount = mechanicsArray.filter(

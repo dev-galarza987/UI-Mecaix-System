@@ -414,7 +414,7 @@ export default function ReservateListAll() {
                             </td>
                             <td className="p-4">
                               <span className="font-semibold text-emerald-700">
-                                ${reservate.totalPrice}
+                                Bs.{reservate.totalPrice}
                               </span>
                             </td>
                             <td className="p-4">
